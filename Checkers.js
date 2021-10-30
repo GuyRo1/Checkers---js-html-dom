@@ -299,7 +299,7 @@ function drow() {
 let board
 let move
 let player = false
-let turnFase = true
+let pieceWasntChosen = true
 const startNewGameButton = document.getElementById("start")
 const checkersContainer = document.getElementById("checks-container")
 const nav = document.getElementById("nav")
@@ -315,7 +315,7 @@ start.addEventListener('click', () => {
             highlighted[i].classList.remove('highlight')
         drow()
         player = false
-        turnFase = true
+        pieceWasntChosen = true
         gameEnded = false
     }
 
@@ -339,15 +339,11 @@ start.addEventListener('click', () => {
                 circle.classList.add("empty")
                 circle.addEventListener('click', (event) => {
                     event.stopPropagation()
-                    if (turnFase && !gameEnded) {
+                    if (pieceWasntChosen && !gameEnded) {
                         if (setFirstTurnFase(event.currentTarget.parentElement.id)) {
                             event.currentTarget.classList.add('highlight')
-                            turnFase = !turnFase
+                            pieceWasntChosen = !pieceWasntChosen
                         }
-                    }
-                    else if (event.currentTarget.classList.contains('highlight')) {
-                        turnFase = !turnFase
-                        event.currentTarget.classList.remove('highlight')
                     }
                 }
 
@@ -355,7 +351,7 @@ start.addEventListener('click', () => {
                 tile.appendChild(circle)
                 tile.addEventListener('click', (event) => {
                     //////////////////////////////////////all the code of clicking an empty tile is here
-                    if (!turnFase && !gameEnded) {
+                    if (!pieceWasntChosen && !gameEnded) {
                         if (setSecondTurnFase(event.currentTarget.id)) {
                             let nextPlayer = true
                             let moveStatus
@@ -376,7 +372,7 @@ start.addEventListener('click', () => {
                                 let sourceTile = document.getElementById(move.substr(0, 2))
                                 sourceTile.classList.remove('highlight')
                                 drow()
-                                turnFase = !turnFase
+                                pieceWasntChosen = !pieceWasntChosen
                             }
                             let winner = ""
                             if (nextPlayer) {
