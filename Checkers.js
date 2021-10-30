@@ -295,6 +295,30 @@ function drow() {
         }
     }
 }
+
+function makeAturn() {
+
+    let nextPlayer = true
+    let moveStatus
+    moveStatus = isLegalmove()
+    if (moveStatus > 0) {
+        if (moveStatus === 1)
+            removeAllPacifists()
+        makeMove()
+        turnPieceIntoQueen()
+        if (moveStatus === 2) {
+            removeCaptured()
+            makePieceHot()
+            if (canHotPieceCapture())
+                nextPlayer = false
+            else
+                RemoveHotPiece()
+        }
+        return nextPlayer?1:2
+    }
+    return 0
+
+}
 //////////////////////-Script starts here /////////////////////
 let board
 let move
@@ -358,25 +382,14 @@ start.addEventListener('click', () => {
                     if (!pieceWasntChosen && !gameEnded) {
                         if (setSecondTurnFase(event.currentTarget.id)) {
                             let nextPlayer = true
-                            let moveStatus
-                            moveStatus = isLegalmove()
+                            let moveStatus = makeAturn()
                             if (moveStatus > 0) {
-                                if (moveStatus === 1)
-                                    removeAllPacifists()
-                                makeMove()
-                                turnPieceIntoQueen()
-                                if (moveStatus === 2) {
-                                    removeCaptured()
-                                    makePieceHot()
-                                    if (canHotPieceCapture())
-                                        nextPlayer = false
-                                    else
-                                        RemoveHotPiece()
-                                }
                                 let sourceTile = document.getElementById(move.substr(0, 2))
                                 sourceTile.classList.remove('highlight')
                                 drow()
-                                pieceWasntChosen = !pieceWasntChosen
+                                pieceWasntChosen = true
+                                if(moveStatus===2)
+                                    nextPlayer = false
                             }
                             let winner = ""
                             if (nextPlayer) {
