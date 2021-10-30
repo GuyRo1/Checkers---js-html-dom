@@ -1,15 +1,16 @@
-/////////////////////////////////////////////////////////////////////////////
-//Very Primitive data structure//////////////////////////////////////////////
-//3 chars piece:first letter if 1 then changed else not changed//////////////
-////////////////second letter if 1 then Queen if 2 then super 3 then 1+2/////
-////////////////thrid letter if 1 then black if 2 then white if 0 nothing////
-/////////////////////////////////////////////////////////////////////////////
-//move is a 4letter string: first letter source Row//////////////////////////
-/////////////////////////// second letter source Collumn/////////////////////
-/////////////////////////// third letter target Row//////////////////////////
-/////////////////////////// fourth letter target Collumn/////////////////////
-/////////////////////////////////////////////////////////////////////////////
-//Is legal status is an integer: 0 - is non legal move///////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//Very Primitive data structure//////////////////////////////////////////////Object name = Piece/////////////////////////////////
+//3 chars piece:first letter if 1 then changed else not changed//////////////////// color(number)////0:empty,1:black,2white/
+////////////////second letter if 1 then Queen if 2 then super 3 then 1+2/////////// isQueen /////////////////////////////////////
+////////////////thrid letter if 1 then black if 2 then white if 0 nothing////////// isHot  //////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////// needsUpdate /////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//move is a 4letter string: first letter source Row//////////////////////////Object name = move/////////////////////////////////
+/////////////////////////// second letter source Collumn/////////////////////////// sourceRow //////////////////////////////////
+/////////////////////////// third letter target Row//////////////////////////////// sourceCollumn///////////////////////////////
+/////////////////////////// fourth letter target Collumn/////////////////////////// targetRow//////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////// target collumn/////////////////////////////
+//Is legal status is an integer: 0 - is non legal move/////////////////////////////////////////////////////////////////////////
 /////////////////////////////////1 - is step/////////////////////////////////
 /////////////////////////////////2 - is capture//////////////////////////////
 /////////////////////////////////////////////////////////////////////////////
@@ -23,6 +24,17 @@ function replaceCharachter(locationData, paramter, value) {
     return pieceAsArray.join("")
 }
 
+
+function getEmptyPice(){
+    let emptyPiece = {
+        color:0,
+        isQueen:false,
+        isHot:false,
+        needsUpdate:true
+    }
+    return emptyPiece
+}
+
 function createGameBoard() {
     board = new Array(9)
     for (let i = 1; i < 9; i++) {
@@ -31,8 +43,8 @@ function createGameBoard() {
 }
 
 function whoIsCaptured() {
-    dirR = (+move[0]) < (+move[2]) ? -1 : 1
-    dirC = (+move[1]) < (+move[3]) ? -1 : 1
+    dirR = move['sourceRow'] < move['targertRow'] ? -1 : 1
+    dirC = move['sourceCollumn'] < move['targetCollumn'] ? -1 : 1
     return [(+move[2]) + dirR, (+move[3]) + dirC]
 }
 
@@ -41,12 +53,27 @@ function initializeBoard() {
     for (let i = 1; i < 9; i++) {
         for (let j = 1; j < 9; j++) {
             if (i >= 1 && i <= 3 && isBlackTile)
-                board[i][j] = "102"
+                board[i][j] = {
+                    color:2,
+                    isQueen:false,
+                    isHot:false,
+                    needsUpdate:true
+                }
             else if (i >= 6 && i <= 8 && isBlackTile) {
-                board[i][j] = "101"
+                board[i][j] = {
+                    color:1,
+                    isQueen:false,
+                    isHot:false,
+                    needsUpdate:true
+                }
             }
             else
-                board[i][j] = "100"
+            board[i][j] = {
+                color:0,
+                isQueen:false,
+                isHot:false,
+                needsUpdate:true
+            }
 
             isBlackTile = !isBlackTile
         }
@@ -55,20 +82,20 @@ function initializeBoard() {
 }
 
 function isLegalmove() {
-    let sourcePiece = board[+move[0]][+move[1]]
-    let targetPiece = board[+move[2]][+move[3]]
-    let sourceR = +move[0]
-    let sourceC = +move[1]
-    let targetR = +move[2]
-    let targetC = +move[3]
-    if (targetPiece[2] == '0') {
+    let sourcePiece = board[move['sourceRow']][move['sourceCollumn']]
+    let targetPiece = board[move['targetRow']][move['targetCollumn']]
+    let sourceR = move['sourceRow']
+    let sourceC = move['sourceCollumn']
+    let targetR = move['targetRow']
+    let targetC = move['targetCollumn']
+    if (targetPiece['color'] ===0) {
         if (Math.abs(targetC - sourceC) == 1)
             if (player && (targetR - sourceR == 1) || !player && (targetR - sourceR == -1))
                 return 1
 
         if (Math.abs(targetC - sourceC) == 2)
             if ((Math.abs(targetR - sourceR) === 2))
-                if ((sourcePiece[1] !== '0') || (player && targetR > sourceR) || (!player && targetR < sourceR)) {
+                if ((sourcePiece['isQueen']||sourcePiece['isHot']) || (player && targetR > sourceR) || (!player && targetR < sourceR)) {
                     let capturedCords = whoIsCaptured(move)
                     let capurdedVal = (board[capturedCords[0]][capturedCords[1]])[2]
                     if (player && capurdedVal === '1' || !player && capurdedVal === '2')
@@ -76,7 +103,7 @@ function isLegalmove() {
                 }
 
         //Queen specific logic
-        if (sourcePiece[1] === '1' || sourcePiece[1] === '3')
+        if (sourcePiece['isQueen'])
             if (Math.abs(targetC - sourceC) === Math.abs(targetR - sourceR)) {
                 let distinationFound = false
                 let blockEncounterd = false
@@ -87,7 +114,7 @@ function isLegalmove() {
                 while (!distinationFound && !blockEncounterd) {
                     newC += dirC
                     newR += dirR
-                    if ((board[newR][newC])[2] !== '0')
+                    if (board[newR][newC]['color'] !== 0)
                         blockEncounterd = true
                     else if (newC === targetC) // the movement can be checked only on one axis 
                         distinationFound = true
@@ -95,8 +122,8 @@ function isLegalmove() {
 
                 if (blockEncounterd) {
                     if (newC + dirC === targetC) {
-                        blockColor = (board[newR][newC])[2]
-                        if ((blockColor === '1' && player) || (blockColor === '2' && !player))
+                        blockColor = board[newR][newC]['color']
+                        if ((blockColor === 1 && player) || (blockColor === 2 && !player))
                             return 2
                     }
                 }
@@ -110,42 +137,51 @@ function isLegalmove() {
 }
 
 function makeMove() {
-    movedPiece = board[move[0]][move[1]]
-    movedPiece = replaceCharachter(movedPiece, 0, '1')
-    board[move[2]][move[3]] = movedPiece
-    board[move[0]][move[1]] = '100'
+    board[move['targetCollumn']][move['targetCollumn']] ={
+        color : board[move['sourceRow']][move['sourceCollumn']]['color'],
+        isQueen:board[move['sourceRow']][move['sourceCollumn']]['isQueen'],
+        isHot:board[move['sourceRow']][move['sourceCollumn']]['isHot'],
+        needsUpdate:true
+    }
+    board[move['sourceRow']][move['sourceCollumn']] = getEmptyPice()
 }
 
 function findHotPiece() {
     for (let i = 1; i < 9; i++)
         for (let j = 1; j < 9; j++)
-            if ((board[i][j])[1] === '2' || (board[i][j])[1] === '3')
+            if ((board[i][j])['isHot'])
                 return [i, j]
     return null
 }
 
 function makePieceHot() {
-    changedPiece = board[+(move[2])][+(move[3])]
-    let hotChar = (changedPiece[1] === '1' || changedPiece[1] == '3') ? '3' : '2'
-    changedPiece = replaceCharachter(changedPiece, 1, hotChar)
-    board[+(move[2])][+(move[3])] = changedPiece
+    board[move['targetRow']]['targetCollumn']['isHot'] = true
 }
 
 function RemoveHotPiece() {
     let hotPieceCord = findHotPiece()
     if (hotPieceCord !== null) {
-        let hotPieceVal = board[hotPieceCord[0]][hotPieceCord[1]]
-        normalPieceChar = hotPieceVal[1] == '2' ? '0' : '1'
-        board[hotPieceCord[0]][hotPieceCord[1]] = replaceCharachter(hotPieceVal, 1, normalPieceChar)
+        board[hotPieceCord[0]][hotPieceCord[1]]['isHot']=false
     }
 }
 
 function canHotPieceCapture() {
-    let originalMove = move // check if by value or by reference
-    let hotPiceCord = findHotPiece()
+    let originalMove = {
+        sourceRow : move['sourceRow'],
+        sourceCollumn : move['sourceCollumn'],
+        targetRow : move['targetRow'],
+        targetCollumn : move['targetCollumn']
+    } 
+    let hotPieceCord = findHotPiece()
     for (let i = 1; i < 9; i++)
         for (let j = 1; j < 9; j++) {
-            move = "" + hotPiceCord[0] + hotPiceCord[1] + i + j
+            // move = "" + hotPiceCord[0] + hotPiceCord[1] + i + j
+            move ={
+                sourceRow: hotPieceCord[0],
+                sourceCollumn : hotPieceCord[1],
+                targetRow : i,
+                targetCollumn : j
+            }
             if (isLegalmove() == 2) {
                 move = originalMove
                 return true
@@ -194,21 +230,21 @@ function removeAllPacifists() {
 
 function setFirstTurnFase(firstTurnFase) {
     let firstTurnFaseVal = board[+firstTurnFase[0]][+firstTurnFase[1]]
-    if ((firstTurnFaseVal[2] === '2' && player) || ((firstTurnFaseVal[2] === '1' && !player))) {
-        move = "" + firstTurnFase
+    if ((firstTurnFaseVal['color'] === 2 && player) || ((firstTurnFaseVal['color'] === 1 && !player))) {
+        move = {
+            sourceRow : +firstTurnFase[0],
+            sourceCollumn : +firstTurnFase[0],
+            targertRow : 0,
+            sourceRow : 0
+        }
         return true
     }
     return false
 }
 
 function setSecondTurnFase(secondTurnFase) {
-    if (move.length == 2)
-        move += secondTurnFase
-    else {
-        move = replaceCharachter(move, 2, secondTurnFase[0])
-        move = replaceCharachter(move, 3, secondTurnFase[1])
-    }
-
+    move['targetRow'] = +secondTurnFase[0]
+    move['targetCollumn'] = +secondTurnFase[1]
     return true
 }
 
