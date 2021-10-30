@@ -24,8 +24,17 @@ function replaceCharachter(locationData, paramter, value) {
     return pieceAsArray.join("")
 }
 
+function getOriginalMove(){
+    let originalMove = {
+        sourceRow : move['sourceRow'],
+        sourceCollumn : move['sourceCollumn'],
+        targetRow : move['targetRow'],
+        targetCollumn : move['targetCollumn']
+    } 
+    return originalMove
+}
 
-function getEmptyPice(){
+function getEmptyPiece(){
     let emptyPiece = {
         color:0,
         isQueen:false,
@@ -143,7 +152,7 @@ function makeMove() {
         isHot:board[move['sourceRow']][move['sourceCollumn']]['isHot'],
         needsUpdate:true
     }
-    board[move['sourceRow']][move['sourceCollumn']] = getEmptyPice()
+    board[move['sourceRow']][move['sourceCollumn']] = getEmptyPiece()
 }
 
 function findHotPiece() {
@@ -166,16 +175,10 @@ function RemoveHotPiece() {
 }
 
 function canHotPieceCapture() {
-    let originalMove = {
-        sourceRow : move['sourceRow'],
-        sourceCollumn : move['sourceCollumn'],
-        targetRow : move['targetRow'],
-        targetCollumn : move['targetCollumn']
-    } 
+    let originalMove = getOriginalMove()
     let hotPieceCord = findHotPiece()
     for (let i = 1; i < 9; i++)
         for (let j = 1; j < 9; j++) {
-            // move = "" + hotPiceCord[0] + hotPiceCord[1] + i + j
             move ={
                 sourceRow: hotPieceCord[0],
                 sourceCollumn : hotPieceCord[1],
@@ -192,17 +195,17 @@ function canHotPieceCapture() {
 }
 
 function removeCaptured() {
-    let capturedPiece = whoIsCaptured()
-    board[capturedPiece[0]][capturedPiece[1]] = '100'
+    let capturedPiece = whoIsCaptured()  
+    RemoveHotPiece(capturedPiece[0],capturedPiece[1])
 }
 
 function removPiece(row, collumn) {
-    board[row][collumn] = '100'
+    board[row][collumn] = getEmptyPiece()
 }
 
 function removeAllPacifists() {
     let pacifitGuilty = false
-    let originalMove = move
+    let originalMove = getOriginalMove()
     let relevantPieceChar = player ? '2' : '1'
     let pacifists = new Array(8)
     let pacifistsCount = 0
@@ -212,7 +215,13 @@ function removeAllPacifists() {
                 pacifitGuilty = false
                 for (let k = 1; k < 9 && !pacifitGuilty; k++)
                     for (let l = 1; l < 9 && !pacifitGuilty; l++) {
-                        move = "" + i + j + k + l
+                        //move = "" + i + j + k + l
+                        move = {
+                            sourceRow : i,
+                            sourceCollumn : j,
+                            targetRow : k,
+                            targetCollumn : l
+                        }
                         if (isLegalmove() === 2) {
                             pacifitGuilty = true
                             pacifists[pacifistsCount] = [i, j]
@@ -249,23 +258,26 @@ function setSecondTurnFase(secondTurnFase) {
 }
 
 function turnPieceIntoQueen() {
-    if (player && move[2] === '8' || !player && move[2] === '1') {
-        movedPieceVal = board[+(move[2])][+(move[3])]
-        movedPieceVal = replaceCharachter(movedPieceVal, 1, '1')
-        board[+(move[2])][+(move[3])] = movedPieceVal
+    if (player && move['targetRow'] === '8' || !player && move['targetRow'] === '1') {
+        board['targetRow'][move['targetCollumn']]['isQueen']=true
     }
 
 }
 
 function isWin() {
-    let originalMove = move
-    let relevantPieceChar = player ? '2' : '1'
+    let originalMove = getOriginalMove()
+    let relevantPieceChar = player ? 2 : 1
     for (let i = 1; i < 9; i++) {
         for (let j = 1; j < 9; j++) {
-            if ((board[i][j])[2] === relevantPieceChar) {
+            if ((board[i][j])['color'] === relevantPieceChar) {
                 for (let k = 1; k < 9; k++)
                     for (let l = 1; l < 9; l++) {
-                        move = "" + i + j + k + l
+                       move = {
+                           sourceRow : i,
+                           sourceCollumn : j,
+                           targetRow : k,
+                           targetCollumn : l
+                       }
                         if (isLegalmove() !== 0) {
                             move = originalMove
                             return false
@@ -284,15 +296,15 @@ function isDraw() {
     for (let i = 1; i < 9; i++)
         for (let j = 1; j < 9; j++) {
             pieceValue = board[i][j]
-            if (pieceValue[2] == '1' || pieceValue[2] == '2')
-                if (pieceValue[1] == '0' || pieceValue[1] == '2')
+            if (pieceValue['color'] !==0)
+                if (!pieceValue['isQueen'])
                     return false
-                else if (pieceValue[2] == '1')
+                else if (pieceValue['color'] === 1)
                     if (!oneBlackQueen)
                         oneBlackQueen = true
                     else
                         return false
-                else if (pieceValue[2] == '2')
+                else if (pieceValue['color'] === 2)
                     if (!oneWhiteQueen)
                         oneWhiteQueen = true
                     else
@@ -336,24 +348,25 @@ function drow() {
     let element
     for (let i = 0; i < tilesLength; i++) {
         element = tiles[i]
+        pieceRender = element.lastChild
         cords = element.id
         row = +cords[0]
         collumn = +cords[1]
         tileValue = board[row][collumn]
-        if (tileValue[0] === '1') {
-            tileValue = replaceCharachter(tileValue, 0, '0')
-            element.lastChild.className = "circle"
-            if (tileValue[2] === '0') {
-                element.lastChild.classList.add('empty')
-                board[row][collumn] = tileValue
+        if (tileValue['needsUpdate']) {
+            //tileValue = replaceCharachter(tileValue, 0, '0')
+            tileValue['needsUpdate'] = false
+            pieceRender.className = "circle"
+            if (tileValue['color'] === 0) {
+                pieceRender.classList.add('empty')
             }
             else {
-                if (tileValue[2] === '1')
+                if (tileValue['color'] === 1)
                     element.lastChild.classList.add('black')
                 else
                     element.lastChild.classList.add('white')
-                if (tileValue[1] === '1' || tileValue[1] === '3')
-                    element.lastChild.classList.add('queen')
+                if (tileValue['isQueen'])
+                    pieceRender.classList.add('queen')
             }
             board[row][collumn] = tileValue
         }
