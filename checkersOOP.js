@@ -165,7 +165,7 @@ function findHotPiece() {
 }
 
 function makePieceHot() {
-    board[move['targetRow']]['targetCollumn']['isHot'] = true
+    board[move['targetRow']][move['targetCollumn']]['isHot'] = true
 }
 
 function RemoveHotPiece() {
@@ -197,7 +197,7 @@ function canHotPieceCapture() {
 
 function removeCaptured() {
     let capturedPiece = whoIsCaptured()
-    RemoveHotPiece(capturedPiece[0], capturedPiece[1])
+    removPiece(capturedPiece[0], capturedPiece[1])
 }
 
 function removPiece(row, collumn) {
@@ -222,8 +222,6 @@ function removeAllPacifists() {
                             targetRow: k,
                             targetCollumn: l
                         }
-                        if (i == 2 && j == 3 && k == 4 && l == 5)
-                            alert("bazoooook4")
                         if (isLegalmove() === 2) {
 
                             pacifitGuilty = true
@@ -261,8 +259,8 @@ function setSecondTurnFase(secondTurnFase) {
 }
 
 function turnPieceIntoQueen() {
-    if (player && move['targetRow'] === '8' || !player && move['targetRow'] === '1') {
-        board['targetRow'][move['targetCollumn']]['isQueen'] = true
+    if (player && move['targetRow'] === 8 || !player && move['targetRow'] === 1) {
+        board[move['targetRow']][move['targetCollumn']]['isQueen'] = true
     }
 
 }
