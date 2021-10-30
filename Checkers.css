@@ -120,3 +120,7 @@ button:hover {
     color: white;
     background-color: black;
 }
+
+button:disabled{
+    visibility: hidden;
+}
