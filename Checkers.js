@@ -64,7 +64,6 @@ function initializeBoard() {
                     isHot: false,
                     needsUpdate: true
                 }
-
             isBlackTile = !isBlackTile
         }
         isBlackTile = !isBlackTile
@@ -209,7 +208,6 @@ function removeAllPacifists() {
                     }
             }
     move = cloneMove(originalMove)
-
     if (pacifistsCount !== 0)
         for (let i = 0; i < pacifistsCount; i++)
             removPiece(pacifists[i][0], pacifists[i][1])
@@ -240,7 +238,6 @@ function turnPieceIntoQueen() {
     if (player && move['targetRow'] === 8 || !player && move['targetRow'] === 1) {
         board[move['targetRow']][move['targetCollumn']]['isQueen'] = true
     }
-
 }
 
 function isWin() {
@@ -293,7 +290,6 @@ function isDraw() {
 }
 
 function makeAturn() {
-
     let nextPlayer = true
     let moveStatus
     moveStatus = isLegalmove()
@@ -313,7 +309,6 @@ function makeAturn() {
         return nextPlayer ? 1 : 2
     }
     return 0
-
 }
 ///////////////Render Engine///////////
 function drow() {
@@ -332,7 +327,6 @@ function drow() {
         collumn = +cords[1]
         tileValue = board[row][collumn]
         if (tileValue['needsUpdate']) {
-            //tileValue = replaceCharachter(tileValue, 0, '0')
             tileValue['needsUpdate'] = false
             pieceRender.className = "circle"
             if (tileValue['color'] === 0) {
@@ -349,11 +343,11 @@ function drow() {
         }
     }
 }
-//////////////////////-Script starts here /////////////////////
+//////////////////////-Script starts here /////////////////////////////////
 let board
 let move
 let player = false
-let pieceWasntChosen = true
+let pieceWasChosen = false
 const startNewGameButton = document.getElementById("start")
 const checkersContainer = document.getElementById("checks-container")
 const nav = document.getElementById("nav")
@@ -370,10 +364,9 @@ start.addEventListener('click', () => {
             highlighted[i].classList.remove('highlight')
         drow()
         player = false
-        pieceWasntChosen = true
+        pieceWasChosen = false
         gameEnded = false
     }
-
     else {
         checkersContainer.classList.remove("checkers-container-empty")
         checkersContainer.classList.add("checkers-container-full")
@@ -395,7 +388,7 @@ start.addEventListener('click', () => {
                 circle.addEventListener('click', (event) => {
                     event.stopPropagation()
                     if (!gameEnded) {
-                        if (!pieceWasntChosen) {
+                        if (pieceWasChosen) {
                             let highlighted = document.getElementsByClassName('highlight')
                             let highlightedLength = highlighted.length
                             for (let i = 0; i < highlightedLength; i++)
@@ -403,14 +396,14 @@ start.addEventListener('click', () => {
                         }
                         if (setFirstTurnFase(event.currentTarget.parentElement.id)) {
                             event.currentTarget.classList.add('highlight')
-                            pieceWasntChosen = false
+                            pieceWasChosen = true
                         }
                     }
                 })
                 tile.appendChild(circle)
                 tile.addEventListener('click', (event) => {
                     //////////////////////////////////////all the code of clicking an empty tile is here
-                    if (!pieceWasntChosen && !gameEnded) {
+                    if (pieceWasChosen && !gameEnded) {
                         if (setSecondTurnFase(event.currentTarget.id)) {
                             let nextPlayer = true
                             let moveStatus = makeAturn()
@@ -418,7 +411,7 @@ start.addEventListener('click', () => {
                                 let sourceTile = document.getElementById("" + move['targetRow'] + move['targetCollumn'])
                                 sourceTile.classList.remove('highlight')
                                 drow()
-                                pieceWasntChosen = true
+                                pieceWasChosen = false
                                 if (moveStatus === 2)
                                     nextPlayer = false
                             }
@@ -429,20 +422,16 @@ start.addEventListener('click', () => {
                                     gameEnded = true
                                     winner = player ? "Black won" : "White won"
                                 }
-
                                 else if (isDraw()) {
                                     gameEnded = true
                                     winner = "with a draw"
                                 }
-
                                 if (gameEnded)
                                     setTimeout(() => { alert(`The game was ended, ${winner}`) }, 2000)
                             }
                         }
-
                     }
                 })
-
                 tile.id = "" + i + j
                 chessBoard.appendChild(tile)
                 color = !color
