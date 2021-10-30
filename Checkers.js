@@ -15,6 +15,8 @@
 /////////////////////////////////////////////////////////////////////////////
 //make a turn returns an interer: 0 - a move wasnt made//////////////////////
 //////////////////////////////////1 - a move was made next players turn//////
+//////////////////////////////////2 - a move was made same players turn//////
+/////////////////////////////////////////////////////////////////////////////
 function replaceCharachter(locationData, paramter, value) {
     let pieceAsArray = locationData.split("")
     pieceAsArray[paramter] = value
@@ -262,6 +264,30 @@ function isDraw() {
         }
     return oneBlackQueen & oneWhiteQueen
 }
+
+function makeAturn() {
+
+    let nextPlayer = true
+    let moveStatus
+    moveStatus = isLegalmove()
+    if (moveStatus > 0) {
+        if (moveStatus === 1)
+            removeAllPacifists()
+        makeMove()
+        turnPieceIntoQueen()
+        if (moveStatus === 2) {
+            removeCaptured()
+            makePieceHot()
+            if (canHotPieceCapture())
+                nextPlayer = false
+            else
+                RemoveHotPiece()
+        }
+        return nextPlayer?1:2
+    }
+    return 0
+
+}
 ///////////////Render Engine///////////
 function drow() {
 
@@ -296,30 +322,6 @@ function drow() {
             board[row][collumn] = tileValue
         }
     }
-}
-
-function makeAturn() {
-
-    let nextPlayer = true
-    let moveStatus
-    moveStatus = isLegalmove()
-    if (moveStatus > 0) {
-        if (moveStatus === 1)
-            removeAllPacifists()
-        makeMove()
-        turnPieceIntoQueen()
-        if (moveStatus === 2) {
-            removeCaptured()
-            makePieceHot()
-            if (canHotPieceCapture())
-                nextPlayer = false
-            else
-                RemoveHotPiece()
-        }
-        return nextPlayer?1:2
-    }
-    return 0
-
 }
 //////////////////////-Script starts here /////////////////////
 let board
