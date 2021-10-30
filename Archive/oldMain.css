@@ -23,11 +23,8 @@ body {
 
 .checkers-container-full {
     grid-row: 2;
-    /* display: grid;
-    grid-template-columns: 1fr 5fr 1fr; */
-    display: flex;
-    justify-content: center;
-    align-items:center;
+    display: grid;
+    grid-template-columns: 1fr 5fr 1fr;
 }
 
 .checkers-padding-left,.checkers-padding-right {  
@@ -45,11 +42,13 @@ body {
     grid-row: 2;
 }
 
-
+.footer {
+    grid-row: 3;
+}
 
 .Chess__Board {
-    width: 90vh;
-    height: 90vh;
+    width: 100%;
+    height: 100%;
     grid-column: 2;
     display: grid;
     grid-template-rows: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
@@ -67,8 +66,8 @@ body {
 }
 
 .circle {
-    height: 60%;
-    width: 60%;
+    height: 3rem;
+    width: 3rem;
     border-radius: 50%;    
 }
 
