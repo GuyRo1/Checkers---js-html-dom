@@ -339,15 +339,19 @@ start.addEventListener('click', () => {
                 circle.classList.add("empty")
                 circle.addEventListener('click', (event) => {
                     event.stopPropagation()
-                    if (pieceWasntChosen && !gameEnded) {
+                    if (!gameEnded) {
+                        if (!pieceWasntChosen) {
+                            let highlighted = document.getElementsByClassName('highlight')
+                            let highlightedLength = highlighted.length
+                            for (let i = 0; i < highlightedLength; i++)
+                                highlighted[i].classList.remove('highlight')
+                        }
                         if (setFirstTurnFase(event.currentTarget.parentElement.id)) {
                             event.currentTarget.classList.add('highlight')
-                            pieceWasntChosen = !pieceWasntChosen
+                            pieceWasntChosen = false
                         }
                     }
-                }
-
-                )
+                })
                 tile.appendChild(circle)
                 tile.addEventListener('click', (event) => {
                     //////////////////////////////////////all the code of clicking an empty tile is here
