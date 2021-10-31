@@ -1,3 +1,10 @@
+//Is legal status is an integer: 0 - is non legal move//////////////////////
+/////////////////////////////////1 - is step/////////////////////////////////
+/////////////////////////////////2 - is capture//////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
+//make a turn returns an interer: 0 - a move wasnt made//////////////////////
+//////////////////////////////////1 - a move was made next players turn//////
+//////////////////////////////////2 - a move was made same players turn//////
 function cloneMove(sourceMove) {
     let clone = {
         sourceRow: sourceMove['sourceRow'],
@@ -70,7 +77,6 @@ function isLegalmove() {
     let sourceC = move['sourceCollumn']
     let targetR = move['targetRow']
     let targetC = move['targetCollumn']
-    
     if (targetPiece['color'] === 0) {
         if (Math.abs(targetC - sourceC) == 1)
             if (player && (targetR - sourceR == 1) || !player && (targetR - sourceR == -1))
@@ -111,7 +117,6 @@ function isLegalmove() {
                     }
                 }
                 else
-                    
                     return 1
             }
     }
@@ -148,27 +153,22 @@ function RemoveHotPiece() {
 }
 
 function canHotPieceCapture() {
-
+    let originalMove = cloneMove(move)
     let hotPieceCord = findHotPiece()
-    let originalMove = null
-    if (hotPieceCord !== null) {
-        let originalMove = cloneMove(move)
-        for (let i = 1; i < 9; i++)
-            for (let j = 1; j < 9; j++) {
-                move = {
-                    sourceRow: hotPieceCord[0],
-                    sourceCollumn: hotPieceCord[1],
-                    targetRow: i,
-                    targetCollumn: j
-                }
-                if (isLegalmove() == 2) {
-                    move = cloneMove(originalMove)
-                    return true
-                }
+    for (let i = 1; i < 9; i++)
+        for (let j = 1; j < 9; j++) {
+            move = {
+                sourceRow: hotPieceCord[0],
+                sourceCollumn: hotPieceCord[1],
+                targetRow: i,
+                targetCollumn: j
             }
-    }
-    if (originalMove != null)
-        move = cloneMove(originalMove)
+            if (isLegalmove() == 2) {
+                move = cloneMove(originalMove)
+                return true
+            }
+        }
+    move = cloneMove(originalMove)
     return false
 }
 
@@ -215,7 +215,6 @@ function removeAllPacifists() {
 }
 
 function setFirstTurnFase(firstTurnFase) {
-    let hotPieceCord = findHotPiece()
     let firstTurnFaseVal = board[+firstTurnFase[0]][+firstTurnFase[1]]
     if ((firstTurnFaseVal['color'] === 2 && player) || ((firstTurnFaseVal['color'] === 1 && !player))) {
         move = {
@@ -290,28 +289,11 @@ function isDraw() {
     return oneBlackQueen & oneWhiteQueen
 }
 
-function gameEndedChecks() {
-    let winner = ""
-    player = !player
-    if (isWin()) {
-        gameEnded = true
-        winner = player ? "Black won" : "White won"
-    }
-    else if (isDraw()) {
-        gameEnded = true
-        winner = "with a draw"
-    }
-    player = !player
-    if (gameEnded)
-        setTimeout(() => { alert(`The game was ended, ${winner}`) }, 2000)
-}
-
 function makeAturn() {
     let nextPlayer = true
     let moveStatus
     moveStatus = isLegalmove()
-    if (moveStatus > 0&&!multi||moveStatus===2) {
-       
+    if (moveStatus > 0) {
         if (moveStatus === 1)
             removeAllPacifists()
         makeMove()
@@ -319,10 +301,12 @@ function makeAturn() {
         if (moveStatus === 2) {
             removeCaptured()
             makePieceHot()
-            nextPlayer = false
+            if (canHotPieceCapture())
+                nextPlayer = false
+            else
+                RemoveHotPiece()
         }
         return nextPlayer ? 1 : 2
-
     }
     return 0
 }
@@ -359,55 +343,30 @@ function drow() {
         }
     }
 }
-
-function removeHighlight() {
-    let highlighted = document.getElementsByClassName('highlight')
-    let highlightedLength = highlighted.length
-    for (let i = 0; i < highlightedLength; i++)
-        highlighted[i].classList.remove('highlight')
-}
-
-function nextPlayer() {
-
-    removeHighlight()
-    removeAllPacifists()
-    RemoveHotPiece()
-    drow()
-    gameEndedChecks()
-    multi = false
-    if (!gameEnded)
-        player = !player
-}
 //////////////////////-Script starts here /////////////////////////////////
 let board
 let move
-let multi=false
-let gameEnded = false
 let player = false
 let pieceWasChosen = false
 
-const nextPlayerButton = document.getElementById("nextPlayer")
-nextPlayerButton.textContent = "Next Player"
-nextPlayerButton.addEventListener('click',()=>{
-nextPlayer()    
-nextPlayerButton.setAttribute('disabled', "true")
-})
 const startNewGameButton = document.getElementById("start")
 const checkersContainer = document.getElementById("checks-container")
 const nav = document.getElementById("nav")
-
+let gameEnded = false
 start.textContent = "Start game"
 start.removeAttribute('disabled')
 start.addEventListener('click', () => {
     if (checkersContainer.lastChild) {
         createGameBoard()
         initializeBoard()
-        removeHighlight()
+        let highlighted = document.getElementsByClassName('highlight')
+        let highlightedLength = highlighted.length
+        for (let i = 0; i < highlightedLength; i++)
+            highlighted[i].classList.remove('highlight')
         drow()
         player = false
         pieceWasChosen = false
         gameEnded = false
-        multi = false
     }
     else {
         const chessBoard = document.createElement('div')
@@ -427,9 +386,13 @@ start.addEventListener('click', () => {
                 circle.classList.add("empty")
                 circle.addEventListener('click', (event) => {
                     event.stopPropagation()
-                    if (!gameEnded&&!multi) {
-                        if (pieceWasChosen)
-                            removeHighlight()
+                    if (!gameEnded) {
+                        if (pieceWasChosen) {
+                            let highlighted = document.getElementsByClassName('highlight')
+                            let highlightedLength = highlighted.length
+                            for (let i = 0; i < highlightedLength; i++)
+                                highlighted[i].classList.remove('highlight')
+                        }
                         if (setFirstTurnFase(event.currentTarget.parentElement.id)) {
                             event.currentTarget.classList.add('highlight')
                             pieceWasChosen = true
@@ -444,27 +407,27 @@ start.addEventListener('click', () => {
                             let nextPlayer = true
                             let moveStatus = makeAturn()
                             if (moveStatus > 0) {
+                                let sourceTile = document.getElementById("" + move['targetRow'] + move['targetCollumn'])
+                                sourceTile.classList.remove('highlight')
                                 drow()
-                                if (moveStatus === 2) {
-                                    removeHighlight()
+                                pieceWasChosen = false
+                                if (moveStatus === 2)
                                     nextPlayer = false
-                                    nextPlayerButton.removeAttribute('disabled')
-                                    multi = true
-                                    event.currentTarget.lastChild.classList.add('highlight')
-                                    move.sourceRow = move.targetRow
-                                    move.sourceCollumn = move.targetCollumn
-                                    move.targetCollumn = 0
-                                    move.targetRow=0
-                                }
-                                else {
-                                    pieceWasChosen = false
-                                    removeHighlight()
-                                    nextPlayerButton.setAttribute('disabled', "true")
-                                }
                             }
-                            gameEndedChecks()
-                            if (!gameEnded && nextPlayer)
+                            let winner = ""
+                            if (nextPlayer) {
                                 player = !player
+                                if (isWin()) {
+                                    gameEnded = true
+                                    winner = player ? "Black won" : "White won"
+                                }
+                                else if (isDraw()) {
+                                    gameEnded = true
+                                    winner = "with a draw"
+                                }
+                                if (gameEnded)
+                                    setTimeout(() => { alert(`The game was ended, ${winner}`) }, 2000)
+                            }
                         }
                     }
                 })
