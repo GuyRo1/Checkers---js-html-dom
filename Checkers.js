@@ -461,10 +461,10 @@ start.addEventListener('click', () => {
                                     removeHighlight()
                                     nextPlayerButton.setAttribute('disabled', "true")
                                 }
+                                gameEndedChecks()
+                                if (!gameEnded && nextPlayer)
+                                    player = !player
                             }
-                            gameEndedChecks()
-                            if (!gameEnded && nextPlayer)
-                                player = !player
                         }
                     }
                 })
