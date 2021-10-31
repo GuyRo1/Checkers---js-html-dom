@@ -86,9 +86,12 @@ body {
     background-color: burlywood;
 }
 .highlight {
-    z-index: 1;
-    box-shadow: 0 0 5px 5px teal;
-}
+     z-index: 1;
+     box-shadow: 0 0 5px 5px teal;  
+    
+    
+   
+} 
 
 button {
     height: 100%;
