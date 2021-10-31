@@ -70,7 +70,7 @@ function isLegalmove() {
     let sourceC = move['sourceCollumn']
     let targetR = move['targetRow']
     let targetC = move['targetCollumn']
-    
+
     if (targetPiece['color'] === 0) {
         if (Math.abs(targetC - sourceC) == 1)
             if (player && (targetR - sourceR == 1) || !player && (targetR - sourceR == -1))
@@ -111,7 +111,7 @@ function isLegalmove() {
                     }
                 }
                 else
-                    
+
                     return 1
             }
     }
@@ -310,8 +310,8 @@ function makeAturn() {
     let nextPlayer = true
     let moveStatus
     moveStatus = isLegalmove()
-    if (moveStatus > 0&&!multi||moveStatus===2) {
-       
+    if (moveStatus > 0 && !multi || moveStatus === 2) {
+
         if (moveStatus === 1)
             removeAllPacifists()
         makeMove()
@@ -381,16 +381,23 @@ function nextPlayer() {
 //////////////////////-Script starts here /////////////////////////////////
 let board
 let move
-let multi=false
+let multi = false
 let gameEnded = false
 let player = false
 let pieceWasChosen = false
 
+window.addEventListener('keydown', function (e) {
+    if (e.key === ' ')
+        if (multi) {
+            nextPlayer()
+            nextPlayerButton.setAttribute('disabled', "true")
+        }
+})
 const nextPlayerButton = document.getElementById("nextPlayer")
 nextPlayerButton.textContent = "Next Player"
-nextPlayerButton.addEventListener('click',()=>{
-nextPlayer()    
-nextPlayerButton.setAttribute('disabled', "true")
+nextPlayerButton.addEventListener('click', () => {
+    nextPlayer()
+    nextPlayerButton.setAttribute('disabled', "true")
 })
 const startNewGameButton = document.getElementById("start")
 const checkersContainer = document.getElementById("checks-container")
@@ -427,7 +434,7 @@ start.addEventListener('click', () => {
                 circle.classList.add("empty")
                 circle.addEventListener('click', (event) => {
                     event.stopPropagation()
-                    if (!gameEnded&&!multi) {
+                    if (!gameEnded && !multi) {
                         if (pieceWasChosen)
                             removeHighlight()
                         if (setFirstTurnFase(event.currentTarget.parentElement.id)) {
@@ -454,7 +461,7 @@ start.addEventListener('click', () => {
                                     move.sourceRow = move.targetRow
                                     move.sourceCollumn = move.targetCollumn
                                     move.targetCollumn = 0
-                                    move.targetRow=0
+                                    move.targetRow = 0
                                 }
                                 else {
                                     pieceWasChosen = false
