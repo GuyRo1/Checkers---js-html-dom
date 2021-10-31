@@ -1,3 +1,37 @@
+class CheckersGame 
+{
+    //another way to add a property
+    PropertyB = 100;
+
+    //constructor
+    init()
+    {
+        this.propertyA = 4 //property assignment
+    }
+
+    //method
+    function (params) {
+        //code
+    }
+}
+
+//prototype extends the functionality of EVERY INSTANCE of the class i.e the class istelf
+const extendCheckersGame = () => {
+    CheckersGame.prototype.ToString = () => {
+        alert("Helooo");
+    };
+};
+
+//A demonstration
+// const game = new CheckersGame();
+// game.toString = () => { alert("Bye") };
+// extendCheckersGame();
+// game.ToString();
+// game.toString();
+// const game2 = new CheckersGame();
+// game2.toString();
+// game2.ToString();
+
 function cloneMove(sourceMove) {
     let clone = {
         sourceRow: sourceMove['sourceRow'],
@@ -214,7 +248,7 @@ function removeAllPacifists() {
 
 }
 
-function setFirstTurnFase(firstTurnFase) {
+function setFirstTurnPhase(firstTurnFase) {
     let hotPieceCord = findHotPiece()
     let firstTurnFaseVal = board[+firstTurnFase[0]][+firstTurnFase[1]]
     if ((firstTurnFaseVal['color'] === 2 && player) || ((firstTurnFaseVal['color'] === 1 && !player))) {
@@ -229,7 +263,7 @@ function setFirstTurnFase(firstTurnFase) {
     return false
 }
 
-function setSecondTurnFase(secondTurnFase) {
+function setSecondTurnPhase(secondTurnFase) {
     move['targetRow'] = +secondTurnFase[0]
     move['targetCollumn'] = +secondTurnFase[1]
     return true
@@ -327,7 +361,7 @@ function makeAturn() {
     return 0
 }
 ///////////////Render Engine///////////
-function drow() {
+function draw() {
     let tiles = document.getElementsByClassName('tile')
     let tilesLength = tiles.length
     let row
@@ -372,7 +406,7 @@ function nextPlayer() {
     removeHighlight()
     removeAllPacifists()
     RemoveHotPiece()
-    drow()
+    draw()
     gameEndedChecks()
     multi = false
     if (!gameEnded)
@@ -410,7 +444,7 @@ start.addEventListener('click', () => {
         createGameBoard()
         initializeBoard()
         removeHighlight()
-        drow()
+        draw()
         player = false
         pieceWasChosen = false
         gameEnded = false
@@ -437,7 +471,7 @@ start.addEventListener('click', () => {
                     if (!gameEnded && !multi) {
                         if (pieceWasChosen)
                             removeHighlight()
-                        if (setFirstTurnFase(event.currentTarget.parentElement.id)) {
+                        if (setFirstTurnPhase(event.currentTarget.parentElement.id)) {
                             event.currentTarget.classList.add('highlight')
                             pieceWasChosen = true
                         }
@@ -447,11 +481,11 @@ start.addEventListener('click', () => {
                 tile.addEventListener('click', (event) => {
                     //////////////////////////////////////all the code of clicking an empty tile is here
                     if (pieceWasChosen && !gameEnded) {
-                        if (setSecondTurnFase(event.currentTarget.id)) {
+                        if (setSecondTurnPhase(event.currentTarget.id)) {
                             let nextPlayer = true
                             let moveStatus = makeAturn()
                             if (moveStatus > 0) {
-                                drow()
+                                draw()
                                 if (moveStatus === 2) {
                                     removeHighlight()
                                     nextPlayer = false
@@ -484,7 +518,7 @@ start.addEventListener('click', () => {
         checkersContainer.appendChild(chessBoard)
         createGameBoard()
         initializeBoard()
-        drow()
+        draw()
         start.textContent = "Start new game"
     }
 })
