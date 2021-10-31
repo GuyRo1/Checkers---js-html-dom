@@ -333,6 +333,7 @@ const checkersContainer = document.getElementById("checks-container")
 const nav = document.getElementById("nav")
 let gameEnded = false
 start.textContent = "Start game"
+start.removeAttribute('disabled')
 start.addEventListener('click', () => {
     if (checkersContainer.lastChild) {
         createGameBoard()
