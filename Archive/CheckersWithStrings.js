@@ -348,8 +348,6 @@ start.addEventListener('click', () => {
     }
 
     else {
-        checkersContainer.classList.remove("checkers-container-empty")
-        checkersContainer.classList.add("checkers-container-full")
         const chessBoard = document.createElement('div')
         chessBoard.classList.add('Chess__Board')
         let tile
@@ -422,13 +420,8 @@ start.addEventListener('click', () => {
             }
             color = !color
         }
-        let padding = document.createElement('div')
-        padding.className = "checkers-padding-left"
-        checkersContainer.appendChild(padding)
+        
         checkersContainer.appendChild(chessBoard)
-        padding = document.createElement('div')
-        padding.className = "checkers-padding-right"
-        checkersContainer.appendChild(padding)
         createGameBoard()
         initializeBoard()
         drow()
