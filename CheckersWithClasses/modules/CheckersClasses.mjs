@@ -68,6 +68,7 @@ class Checker {
     }
 }
 
+
 class CheckersGame {
     constructor() {
         this.multi = false
@@ -389,9 +390,12 @@ class CheckersGame {
 
 
     }
+
+    printAAAA(){
+        alert("aaaaaaa")
+    }
 }
 
-export{Constants, Coordinates, Move, Checker, CheckersGame}
-
+export default CheckersGame;
 
 
