@@ -1,4 +1,4 @@
-const myEnum = {
+const Constants = {
     white: "white",
     black: "black",
     empty: "empty",
@@ -16,7 +16,7 @@ const myEnum = {
     regularPiece: "regularPiece"
 }
 
-class Cordinates {
+class Coordinates {
     constructor(row, collumn) {
         this.row = row
         this.collumn = collumn
@@ -41,7 +41,7 @@ class Move {
     }
 
     turnToCords() {
-        return [new Cordinates(this.sourceRow, this.sourceCollumn), new Cordinates(this.targetRow, this.targetCollumn)]
+        return [new Coordinates(this.sourceRow, this.sourceCollumn), new Coordinates(this.targetRow, this.targetCollumn)]
     }
 
 }
@@ -55,7 +55,7 @@ class Checker {
     }
 
     static getEmptyPiece() {
-        return new Checker(myEnum.empty)
+        return new Checker(Constants.empty)
     }
 
     clonePiece() {
@@ -103,13 +103,13 @@ class CheckersGame {
 
         if ((row + collumn) % 2 == 1) {
             if (row > 0 && row < 4)
-                gameBoard[row][collumn] = new Checker(myEnum.white)
+                gameBoard[row][collumn] = new Checker(Constants.white)
             else if (row > 5 && row < 9)
-                gameBoard[row][collumn] = new Checker(myEnum.black)
+                gameBoard[row][collumn] = new Checker(Constants.black)
             else
-                gameBoard[row][collumn] = new Checker(myEnum.empty)
+                gameBoard[row][collumn] = new Checker(Constants.empty)
         }
-        else gameBoard[row][collumn] = new Checker(myEnum.empty)
+        else gameBoard[row][collumn] = new Checker(Constants.empty)
 
     }
 
@@ -117,7 +117,7 @@ class CheckersGame {
         for (let i = 1; i < 9; i++)
             for (let j = 1; j < 9; j++) {
                 if (callBack(i, j, anyObject)) {
-                    return new Cordinates(i, j)
+                    return new Coordinates(i, j)
                 }
             }
         return null
@@ -127,20 +127,20 @@ class CheckersGame {
         this.scanBoard((row, collumn) => {
             if ((row + collumn) % 2 == 1) {
                 if (row > 0 && row < 4)
-                    this.board[row][collumn] = new Checker(myEnum.white)
+                    this.board[row][collumn] = new Checker(Constants.white)
                 else if (row > 5 && row < 9)
-                    this.board[row][collumn] = new Checker(myEnum.black)
+                    this.board[row][collumn] = new Checker(Constants.black)
                 else
-                    this.board[row][collumn] = new Checker(myEnum.empty)
+                    this.board[row][collumn] = new Checker(Constants.empty)
             }
-            else this.board[row][collumn] = new Checker(myEnum.empty)
+            else this.board[row][collumn] = new Checker(Constants.empty)
         })
     }
 
     whoIsCaptured() {
         let oppositMovementRow = (this.move.sourceRow < this.move.targetRow) ? -1 : 1
         let oppositMovementCollumn = (this.move.sourceCollumn < this.move.targetCollumn) ? -1 : 1
-        return new Cordinates(this.move.targetRow + oppositMovementRow, this.move.targetCollumn + oppositMovementCollumn)
+        return new Coordinates(this.move.targetRow + oppositMovementRow, this.move.targetCollumn + oppositMovementCollumn)
     }
 
     makeAMove() {
@@ -185,31 +185,31 @@ class CheckersGame {
                 const source = moveToCords[0]
                 let pieceRank
                 if (sourcePiece.isQueen === true)
-                    pieceRank = myEnum.queen
+                    pieceRank = Constants.queen
                 else if (sourcePiece.isHot)
-                    pieceRank = myEnum.hotPiece
+                    pieceRank = Constants.hotPiece
                 else
-                    pieceRank = myEnum.regular
+                    pieceRank = Constants.regular
                 switch (pieceRank) {
-                    case myEnum.queen:
+                    case Constants.queen:
                         return this.tryMovingTheQueen(source,target)
-                    case myEnum.hotPiece:
+                    case Constants.hotPiece:
                         return this.tryMovingHotPiece(rowDistance)
-                    case myEnum.regular:
+                    case Constants.regular:
                         return this.tryMovingRegular(rowDistance,source,target)
                     default:
-                        return myEnum.noMove 
+                        return Constants.noMove 
                 }
             }
         }
-        return myEnum.noMove
+        return Constants.noMove
     }
 
     tryMovingRegular(rowDistance,source,target){
         if(this.player&&target.row>source.row||!this.player&&target.row<source.row)
             return canHotPieceCapture(rowDistance)
         else
-            return myEnum.noMove
+            return Constants.noMove
     }
 
     tryMovingTheQueen(target,source) {
@@ -223,19 +223,19 @@ class CheckersGame {
         while (!blockEncounterd || foundDistination) {
             newRow += directionRow
             newCollumn += directionCollumn
-            if (this.board[newRow][newCollumn].color !== myEnum.empty)
+            if (this.board[newRow][newCollumn].color !== Constants.empty)
                 blockEncounterd = true
             else if (newRow === target.row)
                 foundDistination = true
         }
         if (blockEncounterd) {
-            if (target.isSameLocation(new Cordinates(newRow + directionRow, newCollumn + directionCollumn)))
+            if (target.isSameLocation(new Coordinates(newRow + directionRow, newCollumn + directionCollumn)))
                 if (!this.isPlayersPiece(board[newRow][newCollumn]))
-                    return myEnum.captrue
+                    return Constants.captrue
         }
-        else return myEnum.step
+        else return Constants.step
 
-        return myEnum.noMove
+        return Constants.noMove
     }
 
 
@@ -244,12 +244,12 @@ class CheckersGame {
         switch (rowDistance) {
             case 2:
                 if(!this.isPlayersPiece(this.whoIsCaptured()))
-                return myEnum.captrue
-                else return myEnum.noTurn
+                return Constants.captrue
+                else return Constants.noTurn
             case 1:
-                return myEnum.step
+                return Constants.step
             default:
-                return myEnum.noMove
+                return Constants.noMove
         }
     }
     tryTakingThePath(source, target) {
@@ -261,12 +261,12 @@ class CheckersGame {
         while (!blockEncounterd) {
             newRow += directionRow
             newCollumn += directionCollumn
-            if (this.board[newRow][newCollumn].color !== myEnum.empty)
+            if (this.board[newRow][newCollumn].color !== Constants.empty)
                 blockEncounterd = true
             else if (newRow === target.row)
                 blockEncounterd = true
         }
-        return new Cordinates(newRow, newCollumn)
+        return new Coordinates(newRow, newCollumn)
     }
 
     removeAllPacifists() {
@@ -274,14 +274,14 @@ class CheckersGame {
         let originalMove = this.move.cloneMove()
         this.scanBoard((row, collumn) => {
             let pieceColor = this.board[row][collumn].color
-            if (this.player && pieceColor === myEnum.white || !this.player && pieceColor === myEnum.black)
+            if (this.player && pieceColor === Constants.white || !this.player && pieceColor === Constants.black)
                 this.scanBoard((row, collumn, sourceCordinates) => {
                     this.move = new Move(sourceCordinates.row, sourceCordinates.collumn, row, collumn)
-                    if (this.isLegalMove() !== myEnum.captrue) {
+                    if (this.isLegalMove() !== Constants.captrue) {
                         this.removePiece(sourceCordinates.row, sourceCordinates.collumn)
                         return true
                     }
-                }, new Cordinates(row, collumn))
+                }, new Coordinates(row, collumn))
         })
         this.move = originalMove.cloneMove()
     }
@@ -296,13 +296,13 @@ class CheckersGame {
         let originalMove = this.move.cloneMove()
         if (this.scanBoard((row, collumn) => {
             let pieceColor = this.board[row][collumn].color
-            if (this.player && pieceColor === myEnum.white || !this.player && pieceColor === myEnum.black) {
+            if (this.player && pieceColor === Constants.white || !this.player && pieceColor === Constants.black) {
                 if (this.scanBoard((row, collumn, sourceCordinates) => {
                     this.move = new Move(sourceCordinates.row, sourceCordinates.collumn, row, collumn)
-                    if (this.isLegalMove() !== myEnum.noMove) {
+                    if (this.isLegalMove() !== Constants.noMove) {
                         return true
                     }
-                }, new Cordinates(row, collumn)))
+                }, new Coordinates(row, collumn)))
                     return true
             }
         }) !== null) {
@@ -319,15 +319,15 @@ class CheckersGame {
         for (let i = 1; i < 9; i++)
             for (let j = 1; j < 9; j++) {
                 pieceValue = this.board[i][j]
-                if (pieceValue.color !== myEnum.empty)
+                if (pieceValue.color !== Constants.empty)
                     if (!pieceValue.isQueen)
                         return false
-                    else if (pieceValue.color === myEnum.white)
+                    else if (pieceValue.color === Constants.white)
                         if (!oneBlackQueen)
                             oneBlackQueen = true
                         else
                             return false
-                    else if (pieceValue.color === myEnum.black)
+                    else if (pieceValue.color === Constants.black)
                         if (!oneWhiteQueen)
                             oneWhiteQueen = true
                         else
@@ -337,38 +337,38 @@ class CheckersGame {
 
     endGameChecks() {
         if (this.isWin())
-            return myEnum.win
+            return Constants.win
         else if (isDraw())
-            return myEnum.draw
+            return Constants.draw
         else
-            return myEnum.regular
+            return Constants.regular
     }
 
     makeAturn() {
         const chosenPiece = this.board[this.move.sourceRow][this.move.sourceCollumn]
-        let isMultiAndMultiPiece = this.multi && chosenPiece.isSameLocation(new Cordinates(move.sourceRow, move.sourceCollumn))
+        let isMultiAndMultiPiece = this.multi && chosenPiece.isSameLocation(new Coordinates(move.sourceRow, move.sourceCollumn))
         if (isMultiAndMultiPiece || !this.multi && this.isPlayersPiece(chosenPiece)) {
             let nextPlayer = true
             let moveStatus
             moveStatus = this.isLegalmove()
-            if (moveStatus === myEnum.captrue || !this.multi && moveStatus !== myEnum.noMove) {
-                if (moveStatus === myEnum.step)
+            if (moveStatus === Constants.captrue || !this.multi && moveStatus !== Constants.noMove) {
+                if (moveStatus === Constants.step)
                     this.removeAllPacifists()
                 this.makeMove()
                 this.turnPieceIntoQueen()
-                if (moveStatus === myEnum.captrue) {
+                if (moveStatus === Constants.captrue) {
                     this.removeCaptured()
                     this.makePieceHot()
                     nextPlayer = false
                 }
-                return nextPlayer ? myEnum.nextPlayer : myEnum.samePlayer
+                return nextPlayer ? Constants.nextPlayer : Constants.samePlayer
             }
-            return myEnum.noTurn
+            return Constants.noTurn
         }
     }
 
     isPlayersPiece(piece) {
-        return this.player && piece.color == myEnum.white || !this.player && piece.color == myEnum.black
+        return this.player && piece.color == Constants.white || !this.player && piece.color == Constants.black
     }
 
     nextPlayer() {
@@ -382,7 +382,7 @@ class CheckersGame {
             this.move = new Move(turn[0], turn[1], turn[2], turn[3])
         let turnStatus = this.makeAMove()
         let endGamestatus = this.endGameChecks()
-        if (endGamestatus === myEnum.regular)
+        if (endGamestatus === Constants.regular)
             return turnStatus
         else
             return endGamestatus
@@ -391,12 +391,7 @@ class CheckersGame {
     }
 }
 
-g = new CheckersGame()
-console.log(g.board[1][2]);
-g.removePiece(1, 2)
-console.log(g.board[1][2]);
-g.newGame()
-console.log(g.board[1][2]);
+export{Constants, Coordinates, Move, Checker, CheckersGame}
 
 
 

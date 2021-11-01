@@ -1,37 +1,3 @@
-// class CheckersGame 
-// {
-//     //another way to add a property
-//     PropertyB = 100;
-
-//     //constructor
-//     init()
-//     {
-//         this.propertyA = 4 //property assignment
-//     }
-
-//     //method
-//     function (params) {
-//         //code
-//     }
-// }
-
-// //prototype extends the functionality of EVERY INSTANCE of the class i.e the class istelf
-// const extendCheckersGame = () => {
-//     CheckersGame.prototype.ToString = () => {
-//         alert("Helooo");
-//     };
-// };
-
-//A demonstration
-// const game = new CheckersGame();
-// game.toString = () => { alert("Bye") };
-// extendCheckersGame();
-// game.ToString();
-// game.toString();
-// const game2 = new CheckersGame();
-// game2.toString();
-// game2.ToString();
-
 
 //Done
 function cloneMove(sourceMove) {
@@ -118,7 +84,7 @@ function isLegalmove() {
         if (Math.abs(targetC - sourceC) == 2)
             if ((Math.abs(targetR - sourceR) === 2))
                 if ((sourcePiece['isQueen'] || sourcePiece['isHot']) || (player && targetR > sourceR) || (!player && targetR < sourceR)) {
-                    let capturedCords = whoIsCaptured(move)
+                    let capturedCords = whoIsCaptured()
                     let capurdedVal = board[capturedCords[0]][capturedCords[1]]['color']
                     if (player && capurdedVal === 1 || !player && capurdedVal === 2)
                         return 2
@@ -291,7 +257,7 @@ function turnPieceIntoQueen() {
     }
 }
 
-
+//Done
 function isWin() {
     let originalMove = cloneMove(move)
     let relevantPieceChar = player ? 2 : 1
@@ -318,6 +284,7 @@ function isWin() {
     return true
 }
 
+//Done
 function isDraw() {
     let oneBlackQueen = false
     let oneWhiteQueen = false
@@ -341,6 +308,7 @@ function isDraw() {
     return oneBlackQueen & oneWhiteQueen
 }
 
+//Done
 function gameEndedChecks() {
     let winner = ""
     player = !player
@@ -357,6 +325,7 @@ function gameEndedChecks() {
         setTimeout(() => { alert(`The game was ended, ${winner}`) }, 2000)
 }
 
+//Done
 function makeAturn() {
     let nextPlayer = true
     let moveStatus
@@ -377,6 +346,8 @@ function makeAturn() {
     }
     return 0
 }
+
+
 ///////////////Render Engine///////////
 function draw() {
     let tiles = document.getElementsByClassName('tile')
@@ -411,6 +382,7 @@ function draw() {
     }
 }
 
+
 function removeHighlight() {
     let highlighted = document.getElementsByClassName('highlight')
     let highlightedLength = highlighted.length
@@ -418,6 +390,7 @@ function removeHighlight() {
         highlighted[i].classList.remove('highlight')
 }
 
+//Done
 function nextPlayer() {
 
     removeHighlight()
