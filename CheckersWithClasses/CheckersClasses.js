@@ -391,7 +391,7 @@ class CheckersGame {
     }
 }
 
-export{Constants, Coordinates, Move, Checker, CheckersGame}
+//export{Constants, Coordinates, Move, Checker, CheckersGame}
 
 
 
