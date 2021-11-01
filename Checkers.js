@@ -1,26 +1,26 @@
-class CheckersGame 
-{
-    //another way to add a property
-    PropertyB = 100;
+// class CheckersGame 
+// {
+//     //another way to add a property
+//     PropertyB = 100;
 
-    //constructor
-    init()
-    {
-        this.propertyA = 4 //property assignment
-    }
+//     //constructor
+//     init()
+//     {
+//         this.propertyA = 4 //property assignment
+//     }
 
-    //method
-    function (params) {
-        //code
-    }
-}
+//     //method
+//     function (params) {
+//         //code
+//     }
+// }
 
-//prototype extends the functionality of EVERY INSTANCE of the class i.e the class istelf
-const extendCheckersGame = () => {
-    CheckersGame.prototype.ToString = () => {
-        alert("Helooo");
-    };
-};
+// //prototype extends the functionality of EVERY INSTANCE of the class i.e the class istelf
+// const extendCheckersGame = () => {
+//     CheckersGame.prototype.ToString = () => {
+//         alert("Helooo");
+//     };
+// };
 
 //A demonstration
 // const game = new CheckersGame();
@@ -32,6 +32,8 @@ const extendCheckersGame = () => {
 // game2.toString();
 // game2.ToString();
 
+
+//Done
 function cloneMove(sourceMove) {
     let clone = {
         sourceRow: sourceMove['sourceRow'],
@@ -41,7 +43,7 @@ function cloneMove(sourceMove) {
     }
     return clone
 }
-
+//Done
 function getEmptyPiece() {
     let emptyPiece = {
         color: 0,
@@ -51,7 +53,7 @@ function getEmptyPiece() {
     }
     return emptyPiece
 }
-
+//Done
 function createGameBoard() {
     board = new Array(9)
     for (let i = 1; i < 9; i++) {
@@ -59,12 +61,14 @@ function createGameBoard() {
     }
 }
 
+//Done
 function whoIsCaptured() {
     let dirR = (move['sourceRow'] < move['targetRow']) ? -1 : 1
     let dirC = (move['sourceCollumn'] < move['targetCollumn']) ? -1 : 1
     return [(+move['targetRow']) + dirR, (+move['targetCollumn']) + dirC]
 }
 
+//Done
 function initializeBoard() {
     let isBlackTile = false
     for (let i = 1; i < 9; i++) {
@@ -97,6 +101,7 @@ function initializeBoard() {
     }
 }
 
+//Do later
 function isLegalmove() {
     let sourcePiece = board[move['sourceRow']][move['sourceCollumn']]
     let targetPiece = board[move['targetRow']][move['targetCollumn']]
@@ -152,6 +157,7 @@ function isLegalmove() {
     return 0
 }
 
+//Done
 function makeMove() {
     board[move['targetRow']][move['targetCollumn']] = {
         color: board[move['sourceRow']][move['sourceCollumn']]['color'],
@@ -162,6 +168,7 @@ function makeMove() {
     board[move['sourceRow']][move['sourceCollumn']] = getEmptyPiece()
 }
 
+//Done
 function findHotPiece() {
     for (let i = 1; i < 9; i++)
         for (let j = 1; j < 9; j++)
@@ -170,10 +177,12 @@ function findHotPiece() {
     return null
 }
 
+//Done
 function makePieceHot() {
     board[move['targetRow']][move['targetCollumn']]['isHot'] = true
 }
 
+//Done
 function RemoveHotPiece() {
     let hotPieceCord = findHotPiece()
     if (hotPieceCord !== null) {
@@ -181,6 +190,7 @@ function RemoveHotPiece() {
     }
 }
 
+//Not sure if needed really
 function canHotPieceCapture() {
 
     let hotPieceCord = findHotPiece()
@@ -206,15 +216,19 @@ function canHotPieceCapture() {
     return false
 }
 
+//Done
 function removeCaptured() {
     let capturedPiece = whoIsCaptured()
     removPiece(capturedPiece[0], capturedPiece[1])
 }
 
+
+//Done
 function removPiece(row, collumn) {
     board[row][collumn] = getEmptyPiece()
 }
 
+//Done
 function removeAllPacifists() {
     let pacifitGuilty = false
     let originalMove = cloneMove(move)
@@ -233,7 +247,7 @@ function removeAllPacifists() {
                             targetRow: k,
                             targetCollumn: l
                         }
-                        if (isLegalmove() === 2) {
+                        if (this.isLegalmove() === 2) {
 
                             pacifitGuilty = true
                             pacifists[pacifistsCount] = [i, j]
@@ -247,6 +261,7 @@ function removeAllPacifists() {
             removPiece(pacifists[i][0], pacifists[i][1])
 
 }
+
 
 function setFirstTurnPhase(firstTurnFase) {
     let hotPieceCord = findHotPiece()
@@ -269,11 +284,13 @@ function setSecondTurnPhase(secondTurnFase) {
     return true
 }
 
+//Done
 function turnPieceIntoQueen() {
     if (player && move['targetRow'] === 8 || !player && move['targetRow'] === 1) {
         board[move['targetRow']][move['targetCollumn']]['isQueen'] = true
     }
 }
+
 
 function isWin() {
     let originalMove = cloneMove(move)
