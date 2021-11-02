@@ -1,0 +1,59 @@
+body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.container {
+  width: 100vh;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+  .checkersBoard {
+    width: 50%;
+    height:50%;
+    display: grid;
+    grid-template-rows: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
+    grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
+    border : 0.5rem solid black
+  }
+
+  .tile {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.piece {
+  height: 60%;
+  width: 60%;
+  border-radius: 50%;  
+  
+}
+
+.white {
+  background-color: white;
+}
+
+.white-smoke{
+  background-color: whitesmoke;
+}
+
+.black {
+  background-color: black;
+}
+
+.brown{
+  background-color: burlywood;
+}
+
+.over{
+  border: 3px dotted #666;
+}
+
+[draggable] {
+  user-select: none;
+  cursor: none; 
+}

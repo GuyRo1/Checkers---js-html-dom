@@ -2,6 +2,7 @@ const Constants = {
     white: "white",
     black: "black",
     empty: "empty",
+    neverPiece: "neverPiece",
     step: "step",
     captrue: "capture",
     noMove: "noMove",
@@ -100,20 +101,6 @@ class CheckersGame {
         return board
     }
 
-    createInitPiece(gameBoard, row, collumn) {
-
-        if ((row + collumn) % 2 == 1) {
-            if (row > 0 && row < 4)
-                gameBoard[row][collumn] = new Checker(Constants.white)
-            else if (row > 5 && row < 9)
-                gameBoard[row][collumn] = new Checker(Constants.black)
-            else
-                gameBoard[row][collumn] = new Checker(Constants.empty)
-        }
-        else gameBoard[row][collumn] = new Checker(Constants.empty)
-
-    }
-
     scanBoard(callBack, anyObject) {
         for (let i = 1; i < 9; i++)
             for (let j = 1; j < 9; j++) {
@@ -134,7 +121,10 @@ class CheckersGame {
                 else
                     this.board[row][collumn] = new Checker(Constants.empty)
             }
-            else this.board[row][collumn] = new Checker(Constants.empty)
+            else{
+                this.board[row][collumn] = new Checker(Constants.neverPiece)
+                this.board[row][collumn].color = Constants.neverPiece
+            } 
         })
     }
 
@@ -239,8 +229,6 @@ class CheckersGame {
         return Constants.noMove
     }
 
-
-
     tryMovingHotPiece(rowDistance) {
         switch (rowDistance) {
             case 2:
@@ -253,6 +241,7 @@ class CheckersGame {
                 return Constants.noMove
         }
     }
+    
     tryTakingThePath(source, target) {
         let directionCollumn = target.collumn > source.collumn ? 1 : -1
         let directionRow = target.row > source.row ? 1 : -1
@@ -391,11 +380,23 @@ class CheckersGame {
 
     }
 
-    printAAAA(){
-        alert("aaaaaaa")
+    getBoard(){
+        return this.board
     }
+
+    getPlayer(){
+        return this.player
+    }
+
+    checkImport(){
+        alert("CheckerGame Class Imported currectly")
+    }
+
+
 }
 
-export default CheckersGame;
+
+
+export {CheckersGame,Constants}
 
 
