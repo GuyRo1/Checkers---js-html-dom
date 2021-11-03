@@ -1,43 +1,67 @@
-body {
-  display: flex;
-  justify-content: center;
-  align-items: center;
+
+
+.header {
+  display:flex;
+  height: 5rem;
+  background-color: salmon;
 }
+
+.checker-containers{
+  display:flex;
+  flex-direction:column;
+}
+
+.data-box{
+
+  width: 20rem;
+  height: 20rem;
+  background-color: aqua;
+  color : black;
+}
+
 
 .container {
-  width: 100vh;
+  width: 100vw;
   height: 100vh;
+  display: grid;
+  grid-template-areas: "a a a a a a b" "a a a a a a b" "a a a a a a b";
+}
+
+.checkersBoard {
+  width: 80vh;
+  height: 80vh;
+  display: grid;
+  grid-template-rows: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
+  grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
+  border: 0.5rem solid black;
+  grid-area: a;
+}
+
+.checkerOther {
+  grid-area: b;
+}
+
+.tile {
   display: flex;
   justify-content: center;
   align-items: center;
-}
-  .checkersBoard {
-    width: 50%;
-    height:50%;
-    display: grid;
-    grid-template-rows: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
-    grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
-    border : 0.5rem solid black
-  }
-
-  .tile {
-    display: flex;
-    justify-content: center;
-    align-items: center;
 }
 
 .piece {
   height: 60%;
   width: 60%;
-  border-radius: 50%;  
-  
+  border-radius: 50%;
+}
+
+.queen {
+  border: 0.5rem solid red
 }
 
 .white {
   background-color: white;
 }
 
-.white-smoke{
+.white-smoke {
   background-color: whitesmoke;
 }
 
@@ -45,15 +69,19 @@ body {
   background-color: black;
 }
 
-.brown{
+.brown {
   background-color: burlywood;
 }
 
-.over{
+.over {
   border: 3px dotted #666;
+}
+
+.invisibale{
+  visibility:hidden;
 }
 
 [draggable] {
   user-select: none;
-  cursor: none; 
+  cursor: none;
 }

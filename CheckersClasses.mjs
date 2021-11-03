@@ -24,8 +24,7 @@ class Coordinates {
     }
 
     isSameLocation(cordinates) {
-        reutrn(this.row === cordinates.row && this.collumn === cordinates.collumn)
-
+        return (this.row === cordinates.row && this.collumn === cordinates.collumn)
     }
 }
 
@@ -69,7 +68,6 @@ class Checker {
     }
 }
 
-
 class CheckersGame {
     constructor() {
         this.multi = false
@@ -81,6 +79,8 @@ class CheckersGame {
         this.board = this.createBoard()
         this.initializeBoard()
     }
+
+
 
     newGame() {
         this.multi = false
@@ -121,10 +121,10 @@ class CheckersGame {
                 else
                     this.board[row][collumn] = new Checker(Constants.empty)
             }
-            else{
+            else {
                 this.board[row][collumn] = new Checker(Constants.neverPiece)
-                this.board[row][collumn].color = Constants.neverPiece
-            } 
+                this.board[row][collumn].needsUpdate = false
+            }
         })
     }
 
@@ -157,7 +157,7 @@ class CheckersGame {
 
     removeCaptured() {
         let capturedPiece = this.whoIsCaptured()
-        this.removePiece(capturedPiece.row, capturedPiece)
+        this.removePiece(capturedPiece.row, capturedPiece.collumn)
     }
 
     removePiece(row, collumn) {
@@ -166,8 +166,9 @@ class CheckersGame {
 
     isLegalMove() {
         let targetPiece = this.board[this.move.targetRow][this.move.targetCollumn]
-        let sourcePiece = this.board[this.move.targetRow][this.move.targetCollumn]
-        if (targetPiece.color !== empty) {
+        let sourcePiece = this.board[this.move.sourceRow][this.move.sourceCollumn]
+        if (targetPiece.color === Constants.empty) {
+
             let rowDistance = Math.abs(this.move.targetRow - this.move.sourceRow)
             let collumnDistance = Math.abs(this.move.targetCollumn - this.move.sourceCollumn)
             if (rowDistance === collumnDistance) {
@@ -183,37 +184,39 @@ class CheckersGame {
                     pieceRank = Constants.regular
                 switch (pieceRank) {
                     case Constants.queen:
-                        return this.tryMovingTheQueen(source,target)
+                        return this.tryMovingTheQueen(source, target)
                     case Constants.hotPiece:
                         return this.tryMovingHotPiece(rowDistance)
                     case Constants.regular:
-                        return this.tryMovingRegular(rowDistance,source,target)
+                        return this.tryMovingRegular(rowDistance, source, target)
                     default:
-                        return Constants.noMove 
+                        return Constants.noMove
                 }
             }
         }
         return Constants.noMove
     }
 
-    tryMovingRegular(rowDistance,source,target){
-        if(this.player&&target.row>source.row||!this.player&&target.row<source.row)
-            return canHotPieceCapture(rowDistance)
+    tryMovingRegular(rowDistance, source, target) {
+        if (this.player && target.row > source.row || !this.player && target.row < source.row)
+            return this.tryMovingHotPiece(rowDistance)
         else
             return Constants.noMove
     }
 
-    tryMovingTheQueen(target,source) {
+    tryMovingTheQueen(source, target) {
 
         let directionCollumn = target.collumn > source.collumn ? 1 : -1
         let directionRow = target.row > source.row ? 1 : -1
         let newRow = source.row
-        let newCollumn = souece.collumn
+        let newCollumn = source.collumn
         let blockEncounterd = false
-        let foundDistination
-        while (!blockEncounterd || foundDistination) {
+        let foundDistination = false
+        while (!blockEncounterd && !foundDistination) {
             newRow += directionRow
             newCollumn += directionCollumn
+            if(this.board[newRow][newCollumn]==null)
+            alert("oopsie")
             if (this.board[newRow][newCollumn].color !== Constants.empty)
                 blockEncounterd = true
             else if (newRow === target.row)
@@ -221,7 +224,7 @@ class CheckersGame {
         }
         if (blockEncounterd) {
             if (target.isSameLocation(new Coordinates(newRow + directionRow, newCollumn + directionCollumn)))
-                if (!this.isPlayersPiece(board[newRow][newCollumn]))
+                if (!this.isPlayersPiece(this.board[newRow][newCollumn]))
                     return Constants.captrue
         }
         else return Constants.step
@@ -232,8 +235,10 @@ class CheckersGame {
     tryMovingHotPiece(rowDistance) {
         switch (rowDistance) {
             case 2:
-                if(!this.isPlayersPiece(this.whoIsCaptured()))
-                return Constants.captrue
+                let capturedCords = this.whoIsCaptured()
+                let rivalPiece = this.player ? Constants.black : Constants.white
+                if (this.board[capturedCords.row][capturedCords.collumn].color === rivalPiece)
+                    return Constants.captrue
                 else return Constants.noTurn
             case 1:
                 return Constants.step
@@ -241,7 +246,7 @@ class CheckersGame {
                 return Constants.noMove
         }
     }
-    
+
     tryTakingThePath(source, target) {
         let directionCollumn = target.collumn > source.collumn ? 1 : -1
         let directionRow = target.row > source.row ? 1 : -1
@@ -260,14 +265,13 @@ class CheckersGame {
     }
 
     removeAllPacifists() {
-
         let originalMove = this.move.cloneMove()
         this.scanBoard((row, collumn) => {
             let pieceColor = this.board[row][collumn].color
             if (this.player && pieceColor === Constants.white || !this.player && pieceColor === Constants.black)
                 this.scanBoard((row, collumn, sourceCordinates) => {
                     this.move = new Move(sourceCordinates.row, sourceCordinates.collumn, row, collumn)
-                    if (this.isLegalMove() !== Constants.captrue) {
+                    if (this.isLegalMove() === Constants.captrue) {
                         this.removePiece(sourceCordinates.row, sourceCordinates.collumn)
                         return true
                     }
@@ -277,8 +281,8 @@ class CheckersGame {
     }
 
     turnPieceToQueen() {
-        if (this.player && this.move.targetRow === 8 && !this.player && this.move.targetRow === 1)
-            board[this.move.targetRow][this.move.targetCollumn].isQueen = true
+        if (this.player && this.move.targetRow === 8 || !this.player && this.move.targetRow === 1)
+            this.board[this.move.targetRow][this.move.targetCollumn].isQueen = true
     }
 
     isWin() {
@@ -306,6 +310,7 @@ class CheckersGame {
     }
 
     isDraw() {
+        let pieceValue
         for (let i = 1; i < 9; i++)
             for (let j = 1; j < 9; j++) {
                 pieceValue = this.board[i][j]
@@ -328,7 +333,7 @@ class CheckersGame {
     endGameChecks() {
         if (this.isWin())
             return Constants.win
-        else if (isDraw())
+        else if (this.isDraw())
             return Constants.draw
         else
             return Constants.regular
@@ -340,12 +345,12 @@ class CheckersGame {
         if (isMultiAndMultiPiece || !this.multi && this.isPlayersPiece(chosenPiece)) {
             let nextPlayer = true
             let moveStatus
-            moveStatus = this.isLegalmove()
+            moveStatus = this.isLegalMove()
             if (moveStatus === Constants.captrue || !this.multi && moveStatus !== Constants.noMove) {
                 if (moveStatus === Constants.step)
                     this.removeAllPacifists()
-                this.makeMove()
-                this.turnPieceIntoQueen()
+                this.makeAMove()
+                this.turnPieceToQueen()
                 if (moveStatus === Constants.captrue) {
                     this.removeCaptured()
                     this.makePieceHot()
@@ -363,40 +368,43 @@ class CheckersGame {
 
     nextPlayer() {
         this.removeAllPacifists()
-        this.RemoveHotPiece()
+        this.removeHotPiece()
         this.multi = false
+        this.player=!this.player
     }
 
     setTurn(turn) {
-        if (typeof turn === 'string' && turn.length === 4)
-            this.move = new Move(turn[0], turn[1], turn[2], turn[3])
-        let turnStatus = this.makeAMove()
-        let endGamestatus = this.endGameChecks()
-        if (endGamestatus === Constants.regular)
-            return turnStatus
-        else
-            return endGamestatus
-
-
+        if (typeof turn === 'string' && turn.length === 4) {
+            this.move = new Move(+turn[0], +turn[1], +turn[2], +turn[3])
+            let turnStatus = this.makeAturn()
+            if (turnStatus !== Constants.noTurn) {
+                let endGamestatus = this.endGameChecks()
+                if (endGamestatus === Constants.regular) {
+                    if (turnStatus === Constants.nextPlayer)
+                        this.player = !this.player
+                    return turnStatus
+                }
+                else
+                    return endGamestatus
+            }
+        }
+        return Constants.noTurn
     }
 
-    getBoard(){
+    getBoard() {
         return this.board
     }
 
-    getPlayer(){
+    getPlayer() {
         return this.player
     }
 
-    checkImport(){
+    checkImport() {
         alert("CheckerGame Class Imported currectly")
     }
 
 
 }
-
-
-
-export {CheckersGame,Constants}
+export { CheckersGame, Constants }
 
 
