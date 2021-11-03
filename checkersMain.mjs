@@ -27,18 +27,18 @@ addNewGame.addEventListener('click', () => {
     gameNumber = +getGameFromId(event.target.id)
     checkerGames[gameNumber].newGame()
     drawBoard(gameNumber)
-    setPlayerPiecesToDragabale(gameNumber)
+    setPlayerPiecesToDraggable(gameNumber)
   })
   let nextPlayer = document.createElement('button')
   nextPlayer.textContent = "next player"
   nextPlayer.id = gameNumber + "-" + "NextPlayer"
-  nextPlayer.classList.add('invisibale')
+  nextPlayer.classList.add('invisible')
   nextPlayer.addEventListener('click', (event) => {
     gameNumber = +getGameFromId(event.target.id)
     checkerGames[gameNumber].nextPlayer()
     drawBoard(gameNumber)
-    setPlayerPiecesToDragabale(gameNumber)
-    event.target.classList.add('invisibale')
+    setPlayerPiecesToDraggable(gameNumber)
+    event.target.classList.add('invisible')
   })
 
   other.append(restartGame)
@@ -50,8 +50,8 @@ addNewGame.addEventListener('click', () => {
   checkerGames[gameNumber] = new CheckersGame()
   drawBoard(gameNumber)
   data.textContent = `${checkerGames[gameNumber].getPlayer() ? "white" : "black"}'s turn`
-  addDragableEventListiners()
-  setPlayerPiecesToDragabale(gameNumber)
+  addDraggableEventListeners()
+  setPlayerPiecesToDraggable(gameNumber)
 })
 
 function createAndDrawEmptyBoard(gameNumber) {
@@ -84,13 +84,13 @@ function createAndDrawEmptyBoard(gameNumber) {
 
 function drawBoard(gameNumber) {
   const gameBoard = checkerGames[gameNumber].getBoard()
-  checkerGames[gameNumber].scanBoard((row, collumn, gameData) => {
+  checkerGames[gameNumber].scanBoard((row, column, gameData) => {
     let gameBoard = gameData[0]
     let gameNumber = gameData[1]
-    const piece = gameBoard[row][collumn]
+    const piece = gameBoard[row][column]
     if (piece.needsUpdate && !(piece.color === Constants.neverPiece)) {
 
-      let graphicPiece = document.getElementById("" + gameNumber + "-" + row + collumn)
+      let graphicPiece = document.getElementById("" + gameNumber + "-" + row + column)
       graphicPiece.className = "piece"
       switch (piece.color) {
         case Constants.white:
@@ -115,7 +115,7 @@ function drawBoard(gameNumber) {
 
 }
 
-function addDragableEventListiners() {
+function addDraggableEventListeners() {
 
   let items = document.querySelectorAll('.piece')
   items.forEach(function (item) {
@@ -160,7 +160,7 @@ function handleDrop(e) {
     e.stopPropagation(); // stops the browser from redirecting.
   }
   if (dragSource != this) {
-    makeAturn(dragSource, this)
+    makeATurn(dragSource, this)
     this.classList.remove('faded')
     dragSource.classList.remove('faded')
     this.classList.remove('over')
@@ -179,7 +179,7 @@ function checkIfEmptySpot(target) {
   return !(target.classList.contains("white") || target.classList.contains("black"))
 }
 
-function makeAturn(sourcePiece, targetPiece) {
+function makeATurn(sourcePiece, targetPiece) {
 
   if (getGameFromId(sourcePiece.id) === getGameFromId(targetPiece.id)) {
 
@@ -203,21 +203,21 @@ function makeAturn(sourcePiece, targetPiece) {
         dataBox.textContent = `${playerText}'s turn`
         break;
       case Constants.samePlayer:
-        nextPlayerButton.classList.remove('invisibale')
+        nextPlayerButton.classList.remove('invisible')
         break;
     }
 
     if (status === Constants.draw || status === Constants.win)
-      setAllPiecesNonDragable(gameID)
+      setAllPiecesNonDraggable(gameID)
     else
-      setPlayerPiecesToDragabale(gameID)
+      setPlayerPiecesToDraggable(gameID)
 
     if (status === Constants.samePlayer)
-      nextPlayerButton.classList.remove('invisibale')
+      nextPlayerButton.classList.remove('invisible')
   }
 }
 
-function setPlayerPiecesToDragabale(gameNumber) {
+function setPlayerPiecesToDraggable(gameNumber) {
   let playerBool = checkerGames[gameNumber].getPlayer()
   let playerVal = playerBool ? Constants.white : Constants.black
   let allPieces = document.getElementsByClassName("piece")
@@ -231,7 +231,7 @@ function setPlayerPiecesToDragabale(gameNumber) {
   }
 }
 
-function setAllPiecesNonDragable(gameNumber) {
+function setAllPiecesNonDraggable(gameNumber) {
   let allPieces = document.getElementsByClassName("piece")
   for (let i = 0; i < allPieces.length; i++) {
     if (getGameFromId(allPieces[i].id) === "" + gameNumber)

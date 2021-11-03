@@ -1,9 +1,11 @@
-
-
+*{
+  font-family: 'Roboto', sans-serif;
+  background-color:black;
+}
 .header {
   display:flex;
   height: 5rem;
-  background-color: salmon;
+  background-color: #772ce8;
 }
 
 .checker-containers{
@@ -13,18 +15,21 @@
 
 .data-box{
 
+  margin-bottom: 1rem;
   width: 20rem;
   height: 20rem;
-  background-color: aqua;
-  color : black;
+  background-color: #772ce8;
+  color : white;
+  font-size: 3rem;
 }
 
 
 .container {
+  margin: 1.5rem;
   width: 100vw;
   height: 100vh;
   display: grid;
-  grid-template-areas: "a a a a a a b" "a a a a a a b" "a a a a a a b";
+  grid-template-areas: "a a b" "a a  b" "a a  b";
 }
 
 .checkersBoard {
@@ -74,11 +79,40 @@
 }
 
 .over {
-  border: 3px dotted #666;
+  border: 3px dotted #772ce8;
 }
 
-.invisibale{
+.invisible{
   visibility:hidden;
+}
+
+button  {
+  margin-right: 1rem;
+  background-color: #772ce8;
+  display: inline-block;
+  padding: 0.35em 1.2em;
+  border: 0.1em solid #FFFFFF;
+  border-radius: 0.12em;
+  box-sizing: border-box;
+  text-decoration: none;
+  font-family: 'Roboto', sans-serif;
+  font-weight: 300;
+  color: white;
+  text-align: center;
+  transition: all 0.2s;
+}
+
+button div.header{
+  height: 100%;
+}
+
+button:hover {
+  color: white;
+  background-color: black;
+}
+
+button:disabled{
+  visibility: hidden;
 }
 
 [draggable] {
