@@ -215,8 +215,6 @@ class CheckersGame {
         while (!blockEncounterd && !foundDistination) {
             newRow += directionRow
             newCollumn += directionCollumn
-            if(this.board[newRow][newCollumn]==null)
-            alert("oopsie")
             if (this.board[newRow][newCollumn].color !== Constants.empty)
                 blockEncounterd = true
             else if (newRow === target.row)
@@ -239,7 +237,7 @@ class CheckersGame {
                 let rivalPiece = this.player ? Constants.black : Constants.white
                 if (this.board[capturedCords.row][capturedCords.collumn].color === rivalPiece)
                     return Constants.captrue
-                else return Constants.noTurn
+                else return Constants.noMove
             case 1:
                 return Constants.step
             default:
