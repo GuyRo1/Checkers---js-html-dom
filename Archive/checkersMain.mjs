@@ -1,60 +1,72 @@
 import { CheckersGame, Constants } from "./CheckersClasses.mjs"
-const checkerGameElements = {
-  container: { nodeName: 'container', type: 'div', htmlId: 'container', cssClass: 'checker-containers__container' },
-  gameUi: { nodeName: 'gameUi', type: 'div', htmlId: 'gameUi', cssClass: '.container__ui' },
-  dataBox: { nodeName: 'dataBox', type: 'div', htmlId: 'dataBox', cssClass: 'ui__data-box' },
-  checkersBoard: { nodeName: 'checkersBoard', type: 'div', htmlId: 'checkersBoard', cssClass: 'container__checkers-board' },
-  nextPlayer: { nodeName: 'nextPlayer', type: 'button', htmlId: 'nextPlayerButton', cssClass: '' },
-  restartButton: { nodeName: 'restart', type: 'button', htmlId: 'restartButton', cssClass: '' }
-}
 let dragSource = null
 const checkerGames = []
-
-
 const addNewGame = document.getElementById('addNew')
 addNewGame.addEventListener('click', () => {
   const gamesLocation = document.getElementById('checker-containers')
+
   let gameNumber = checkerGames.length
-  const gameNodes = createCheckersGameElements(gameNumber)
-  gameNodes.checkersBoard = addTilesToBoard(gameNodes.checkersBoard, gameNumber)
-  gameNodes.restart.textContent = "Restart Game"
-  gameNodes.restart.addEventListener('click', (event) => {
+  const container = document.createElement('div')
+  container.classList.add('container')
+  const other = document.createElement('div')
+  other.classList.add('checkerOther')
+  const data = document.createElement('div')
+  data.classList.add('data-box')
+  other.append(data)
+  data.id = gameNumber + "-" + "data box"
+  const checkerBoard = createAndDrawEmptyBoard(gameNumber)
+  checkerBoard.id = gameNumber + "-" + "checkersGame"
+  let restartGame = document.createElement('button')
+  restartGame.id = gameNumber + "-" + "RestartButton"
+  restartGame.textContent = "Restart Game"
+  restartGame.addEventListener('click', (event) => {
     gameNumber = +getGameFromId(event.target.id)
     checkerGames[gameNumber].newGame()
     drawBoard(gameNumber)
     setPlayerPiecesToDraggable(gameNumber)
   })
-  gameNodes.nextPlayer.textContent = "next player"
-  gameNodes.nextPlayer.classList.add('invisible')
-  gameNodes.nextPlayer.addEventListener('click', (event) => {
+  let nextPlayer = document.createElement('button')
+  nextPlayer.textContent = "next player"
+  nextPlayer.id = gameNumber + "-" + "NextPlayer"
+  nextPlayer.classList.add('invisible')
+  nextPlayer.addEventListener('click', (event) => {
     gameNumber = +getGameFromId(event.target.id)
     checkerGames[gameNumber].nextPlayer()
     drawBoard(gameNumber)
     setPlayerPiecesToDraggable(gameNumber)
     event.target.classList.add('invisible')
   })
-  gameNodes.gameUi.append(gameNodes.dataBox, gameNodes.restartButton, gameNodes.nextPlayer)
-  gameNodes.container.append(gameNodes.checkersBoard, gameNodes.gameUi)
-  gamesLocation.append(gameNodes.container)
+
+  other.append(restartGame)
+  other.append(nextPlayer)
+
+  container.append(other)
+  container.append(checkerBoard)
+  gamesLocation.append(container)
   checkerGames[gameNumber] = new CheckersGame()
-  gameNodes.dataBox.textContent = `${checkerGames[gameNumber].getPlayer() ? "white" : "black"}'s turn`
-  addDraggableEventListeners()
   drawBoard(gameNumber)
+  data.textContent = `${checkerGames[gameNumber].getPlayer() ? "white" : "black"}'s turn`
+  addDraggableEventListeners()
   setPlayerPiecesToDraggable(gameNumber)
 })
 
-function addTilesToBoard(checkersBoard, gameNumber) {
+function createAndDrawEmptyBoard(gameNumber) {
+  const checkersBoard = document.createElement('div')
+  checkersBoard.classList.add('checkersBoard')
   let tile
   let piece
   let color = true
   for (let i = 1; i < 9; i++) {
     for (let j = 1; j < 9; j++) {
-      tile = createNodeWithClass('div', 'checkers-board__tile')
+      tile = document.createElement('div')
+      tile.classList.add('tile')
       if (color)
         tile.classList.add('white')
       else {
         tile.classList.add('brown')
-        piece = createNodeWithClass('div', 'tile__piece')
+        piece = document.createElement('div')
+        piece.classList.add('piece')
+        piece.draggable = true
         piece.id = '' + gameNumber + "-" + i + j
         tile.appendChild(piece)
       }
@@ -75,7 +87,7 @@ function drawBoard(gameNumber) {
     if (piece.needsUpdate && !(piece.color === Constants.neverPiece)) {
 
       let graphicPiece = document.getElementById("" + gameNumber + "-" + row + column)
-      graphicPiece.className = "tile__piece"
+      graphicPiece.className = "piece"
       switch (piece.color) {
         case Constants.white:
           graphicPiece.classList.add('white')
@@ -101,7 +113,7 @@ function drawBoard(gameNumber) {
 
 function addDraggableEventListeners() {
 
-  let items = document.querySelectorAll('.tile__piece')
+  let items = document.querySelectorAll('.piece')
   items.forEach(function (item) {
     item.addEventListener('dragstart', handleDragStart, false);
     item.addEventListener('dragenter', handleDragEnter, false);
@@ -168,8 +180,8 @@ function makeATurn(sourcePiece, targetPiece) {
   if (getGameFromId(sourcePiece.id) === getGameFromId(targetPiece.id)) {
 
     let gameID = getGameFromId(sourcePiece.id)
-    let dataBox = document.getElementById(gameID + "-" + checkerGameElements.dataBox.htmlId)
-    let nextPlayerButton = document.getElementById(gameID + "-" + checkerGameElements.nextPlayer.htmlId)
+    let dataBox = document.getElementById(gameID + "-" + "data box")
+    let nextPlayerButton = document.getElementById(gameID + "-" + "NextPlayer")
     let sourcePieceCords = getCordsFromId(sourcePiece.id)
     let targetPieceCords = getCordsFromId(targetPiece.id)
     let status = checkerGames[gameID].setTurn(sourcePieceCords + targetPieceCords)
@@ -204,7 +216,7 @@ function makeATurn(sourcePiece, targetPiece) {
 function setPlayerPiecesToDraggable(gameNumber) {
   let playerBool = checkerGames[gameNumber].getPlayer()
   let playerVal = playerBool ? Constants.white : Constants.black
-  let allPieces = document.getElementsByClassName("tile__piece")
+  let allPieces = document.getElementsByClassName("piece")
   for (let i = 0; i < allPieces.length; i++) {
     if (getGameFromId(allPieces[i].id) === "" + gameNumber) {
       if (allPieces[i].classList.contains(playerVal))
@@ -216,7 +228,7 @@ function setPlayerPiecesToDraggable(gameNumber) {
 }
 
 function setAllPiecesNonDraggable(gameNumber) {
-  let allPieces = document.getElementsByClassName("tile__piece")
+  let allPieces = document.getElementsByClassName("piece")
   for (let i = 0; i < allPieces.length; i++) {
     if (getGameFromId(allPieces[i].id) === "" + gameNumber)
       allPieces[i].draggable = false
@@ -234,33 +246,6 @@ function getGameFromId(id) {
 function getCordsFromId(id) {
   return splitID(id)[1]
 }
-
-function createCheckersGameElements(gameId) {
-  let gameElements = {}
-  let gameElementsArray =[]
-  let i=0
-  for(const element in checkerGameElements){
-    gameElementsArray[i++] = checkerGameElements[element]
-  }
-  for (const element of gameElementsArray) {
-    gameElements[element.nodeName] = document.createElement(element.type)
-    gameElements[element.nodeName].id = gameId + "-" + element.htmlId
-    if (element.cssClass !== '')
-      gameElements[element.nodeName].classList.add(element.cssClass)
-  }
-  return gameElements
-}
-
-function createNodeWithClass(nodeType, className) {
-  let node = document.createElement(nodeType)
-  node.classList.add(className)
-  return node
-}
-
-
-
-
-
 
 
 

@@ -13,7 +13,29 @@
   flex-direction:column;
 }
 
-.data-box{
+.checker-containers__container {
+  margin: 1.5rem;
+  width: 100vw;
+  height: 100vh;
+  display: grid;
+  grid-template-areas: "a a b" "a a b" "a a b";
+}
+
+.container__checkers-board {
+  width: 80vh;
+  height: 80vh;
+  display: grid;
+  grid-template-rows: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
+  grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
+  border: 0.5rem solid black;
+  grid-area: a;
+}
+
+.container__ui {
+  grid-area: b;
+}
+
+.ui__data-box{
 
   margin-bottom: 1rem;
   width: 20rem;
@@ -24,35 +46,13 @@
 }
 
 
-.container {
-  margin: 1.5rem;
-  width: 100vw;
-  height: 100vh;
-  display: grid;
-  grid-template-areas: "a a b" "a a  b" "a a  b";
-}
-
-.checkersBoard {
-  width: 80vh;
-  height: 80vh;
-  display: grid;
-  grid-template-rows: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
-  grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
-  border: 0.5rem solid black;
-  grid-area: a;
-}
-
-.checkerOther {
-  grid-area: b;
-}
-
-.tile {
+.checkers-board__tile {
   display: flex;
   justify-content: center;
   align-items: center;
 }
 
-.piece {
+.tile__piece {
   height: 60%;
   width: 60%;
   border-radius: 50%;
@@ -115,7 +115,16 @@ button:disabled{
   visibility: hidden;
 }
 
-[draggable] {
+.moved{
+  cursor:grabbing;
+}
+
+[draggable=true] {
   user-select: none;
+  cursor: grab;
+}
+
+[draggable=false]{
   cursor: none;
 }
+
