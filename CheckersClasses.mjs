@@ -133,9 +133,9 @@ class CheckersGame {
     }
 
     whoIsCaptured() {
-        let oppositMovementRow = (this.move.sourceRow < this.move.targetRow) ? -1 : 1
-        let oppositMovementColumn = (this.move.sourceColumn < this.move.targetColumn) ? -1 : 1
-        return new Coordinates(this.move.targetRow + oppositMovementRow, this.move.targetColumn + oppositMovementColumn)
+        let oppositeMovementRow = (this.move.sourceRow < this.move.targetRow) ? -1 : 1
+        let oppositeMovementColumn = (this.move.sourceColumn < this.move.targetColumn) ? -1 : 1
+        return new Coordinates(this.move.targetRow + oppositeMovementRow, this.move.targetColumn + oppositeMovementColumn)
     }
 
     makeAMove() {
@@ -257,8 +257,8 @@ class CheckersGame {
         let blockEncountered = false
         while (!blockEncountered) {
             newRow += directionRow
-            newcolumn += directioncolumn
-            if (this.board[newRow][newcolumn].color !== Constants.empty)
+            newColumn += directionColumn
+            if (this.board[newRow][newColumn].color !== Constants.empty)
                 blockEncountered = true
             else if (newRow === target.row)
                 blockEncountered = true
@@ -383,14 +383,14 @@ class CheckersGame {
             this.move = new Move(+turn[0], +turn[1], +turn[2], +turn[3])
             let turnStatus = this.makeATurn()
             if (turnStatus !== Constants.noTurn) {
-                let endGamestatus = this.endGameChecks()
-                if (endGamestatus === Constants.regular) {
+                let endGameStatus = this.endGameChecks()
+                if (endGameStatus === Constants.regular) {
                     if (turnStatus === Constants.nextPlayer)
                         this.player = !this.player
                     return turnStatus
                 }
                 else
-                    return endGamestatus
+                    return endGameStatus
             }
         }
         return Constants.noTurn
@@ -405,7 +405,7 @@ class CheckersGame {
     }
 
     checkImport() {
-        alert("CheckerGame Class Imported currectly")
+        alert("CheckerGame Class Imported correctly")
     }
 
 

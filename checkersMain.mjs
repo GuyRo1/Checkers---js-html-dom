@@ -33,7 +33,7 @@ addNewGame.addEventListener('click', () => {
     setPlayerPiecesToDraggable(gameNumber)
     event.target.classList.add('invisible')
   })
-  gameNodes.gameUi.append(gameNodes.dataBox, gameNodes.restartButton, gameNodes.nextPlayer)
+  gameNodes.gameUi.append(gameNodes.dataBox, gameNodes.restart, gameNodes.nextPlayer)
   gameNodes.container.append(gameNodes.checkersBoard, gameNodes.gameUi)
   gamesLocation.append(gameNodes.container)
   checkerGames[gameNumber] = new CheckersGame()
