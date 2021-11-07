@@ -27,13 +27,8 @@ class Coordinates {
         return (this.row === coordinates.row && this.column === coordinates.column)
     }
 
-    turnNoSpot() {
-        this.row = 0
-        this.column = 0
-    }
-
-    getEmptySpot() {
-        return new Coordinates(0, 0)
+    getEmptySpot(){
+        return new Coordinates(0,0)
     }
 }
 
@@ -44,7 +39,7 @@ class Move {
         this.targetRow = targetRow
         this.targetColumn = targetColumn
     }
-
+    
     cloneMove() {
         return new Move(this.sourceRow, this.sourceColumn, this.targetRow, this.targetColumn)
     }
@@ -80,7 +75,7 @@ class Checker {
 class CheckersGame {
     constructor() {
         this.multi = false
-        this.multiPiece = new Coordinates(0, 0)
+        this.multiPiece = new Coordinates(0,0)
         this.move = null
         this.multi = false
         this.gameEnded = false
@@ -89,9 +84,11 @@ class CheckersGame {
         this.initializeBoard()
     }
 
+
+
     newGame() {
         this.multi = false
-        this.multiPiece = new Coordinates(0, 0)
+        this.multiPiece = new Coordinates(0,0)
         this.move = null
         this.multi = false
         this.gameEnded = false
@@ -269,6 +266,22 @@ class CheckersGame {
         return new Coordinates(newRow, newColumn)
     }
 
+    removeAllPacifists() {
+        let originalMove = this.move.cloneMove()
+        this.scanBoard((row, column) => {
+            let pieceColor = this.board[row][column].color
+            if (this.player && pieceColor === Constants.white || !this.player && pieceColor === Constants.black)
+                this.scanBoard((row, column, sourceCoordinates) => {
+                    this.move = new Move(sourceCoordinates.row, sourceCoordinates.column, row, column)
+                    if (this.isLegalMove() === Constants.capture) {
+                        this.removePiece(sourceCoordinates.row, sourceCoordinates.column)
+                        return true
+                    }
+                }, new Coordinates(row, column))
+        })
+        this.move = originalMove.cloneMove()
+    }
+
     turnPieceToQueen() {
         if (this.player && this.move.targetRow === 8 || !this.player && this.move.targetRow === 1)
             this.board[this.move.targetRow][this.move.targetColumn].isQueen = true
@@ -332,36 +345,24 @@ class CheckersGame {
         const chosenPiece = this.board[this.move.sourceRow][this.move.sourceColumn]
         let isMultiAndMultiPiece = this.multi && this.multiPiece.isSameLocation(new Coordinates(this.move.sourceRow, this.move.sourceColumn))
         if (isMultiAndMultiPiece || !this.multi && this.isPlayersPiece(chosenPiece)) {
-            let moveStatus = this.isLegalMove()
-            switch (moveStatus) {
-                case Constants.step:
-                    if (!(this.multi || this.canPlayerCapture()))
-                        break;
-                    else
-                        return Constants.noTurn
-                case Constants.capture:
-                    break;
-                default:
-                    return Constants.noTurn
-            }
-            this.makeAMove()
-            this.turnPieceToQueen()
-            if (moveStatus === Constants.capture) {
-                this.multi = true
-                this.multiPiece = new Coordinates(this.move.targetRow, this.move.targetColumn)
-                this.removeCaptured()
-                this.makePieceHot()
-                if (this.canPieceCapture(this.multiPiece, true))
-                    return Constants.samePlayer
-                else {
-                    this.multi = false;
-                    this.multiPiece = this.multiPiece.turnNoSpot()
-                    return Constants.nextPlayer
+            let nextPlayer = true
+            let moveStatus
+            moveStatus = this.isLegalMove()
+            if (moveStatus === Constants.capture || !this.multi && moveStatus !== Constants.noMove) {
+                if (moveStatus === Constants.step)
+                    this.removeAllPacifists()
+                this.makeAMove()
+                this.turnPieceToQueen()
+                if (moveStatus === Constants.capture) {
+                    this.multi=true
+                    this.multiPiece=new Coordinates(this.move.targetRow,this.move.targetColumn)
+                    this.removeCaptured()
+                    this.makePieceHot()
+                    nextPlayer = false
                 }
-
+                return nextPlayer ? Constants.nextPlayer : Constants.samePlayer
             }
-            else
-                return Constants.nextPlayer
+            return Constants.noTurn
         }
     }
 
@@ -369,32 +370,12 @@ class CheckersGame {
         return this.player && piece.color == Constants.white || !this.player && piece.color == Constants.black
     }
 
-    canPieceCapture(coordinates, originalSaveNeeded) {
-        let originalMove
-        if (originalSaveNeeded)
-            originalMove = this.move.cloneMove()
-        let canThisCapture = this.scanBoard((row, column, coordinates) => {
-            this.move = new Move(coordinates.row, coordinates.column, row, column)
-            return this.isLegalMove() === Constants.capture
-        }, coordinates) !== null
-        if (originalSaveNeeded)
-            this.move = originalMove.cloneMove()
-        return canThisCapture
-    }
-
-    canPlayerCapture() {
-        let originalMove = this.move.cloneMove()
-        if (this.scanBoard((row, column) => {
-            let pieceColor = this.board[row][column].color
-            if (this.player && pieceColor === Constants.white || !this.player && pieceColor === Constants.black) {
-                return this.canPieceCapture(new Coordinates(row, column), false)
-            }
-        }) !== null) {
-            this.move = originalMove.cloneMove()
-            return true
-        }
-        this.move = originalMove.cloneMove()
-        return false
+    nextPlayer() {
+        this.removeAllPacifists()
+        this.removeHotPiece()
+        this.multi = false
+        this.multiPiece = this.multiPiece.getEmptySpot()
+        this.player=!this.player
     }
 
     setTurn(turn) {
@@ -426,6 +407,7 @@ class CheckersGame {
     checkImport() {
         alert("CheckerGame Class Imported correctly")
     }
+
 
 }
 export { CheckersGame, Constants }

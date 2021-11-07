@@ -4,6 +4,7 @@ const checkerGameElements = {
   gameUi: { nodeName: 'gameUi', type: 'div', htmlId: 'gameUi', cssClass: '.container__ui' },
   dataBox: { nodeName: 'dataBox', type: 'div', htmlId: 'dataBox', cssClass: 'ui__data-box' },
   checkersBoard: { nodeName: 'checkersBoard', type: 'div', htmlId: 'checkersBoard', cssClass: 'container__checkers-board' },
+  nextPlayer: { nodeName: 'nextPlayer', type: 'button', htmlId: 'nextPlayerButton', cssClass: '' },
   restartButton: { nodeName: 'restart', type: 'button', htmlId: 'restartButton', cssClass: '' }
 }
 let dragSource = null
@@ -23,8 +24,16 @@ addNewGame.addEventListener('click', () => {
     drawBoard(gameNumber)
     setPlayerPiecesToDraggable(gameNumber)
   })
- 
-  gameNodes.gameUi.append(gameNodes.dataBox, gameNodes.restart)
+  gameNodes.nextPlayer.textContent = "next player"
+  gameNodes.nextPlayer.classList.add('invisible')
+  gameNodes.nextPlayer.addEventListener('click', (event) => {
+    gameNumber = +getGameFromId(event.target.id)
+    checkerGames[gameNumber].nextPlayer()
+    drawBoard(gameNumber)
+    setPlayerPiecesToDraggable(gameNumber)
+    event.target.classList.add('invisible')
+  })
+  gameNodes.gameUi.append(gameNodes.dataBox, gameNodes.restart, gameNodes.nextPlayer)
   gameNodes.container.append(gameNodes.checkersBoard, gameNodes.gameUi)
   gamesLocation.append(gameNodes.container)
   checkerGames[gameNumber] = new CheckersGame()
@@ -67,7 +76,6 @@ function drawBoard(gameNumber) {
 
       let graphicPiece = document.getElementById("" + gameNumber + "-" + row + column)
       graphicPiece.className = "tile__piece"
-
       switch (piece.color) {
         case Constants.white:
           graphicPiece.classList.add('white')
@@ -135,11 +143,12 @@ function handleDrop(e) {
   if (e.stopPropagation) {
     e.stopPropagation(); // stops the browser from redirecting.
   }
-  if (dragSource != this) {   
+  if (dragSource != this) {
     makeATurn(dragSource, this)
     this.classList.remove('faded')
     dragSource.classList.remove('faded')
     this.classList.remove('over')
+
   }
   return false;
 }
@@ -160,6 +169,7 @@ function makeATurn(sourcePiece, targetPiece) {
 
     let gameID = getGameFromId(sourcePiece.id)
     let dataBox = document.getElementById(gameID + "-" + checkerGameElements.dataBox.htmlId)
+    let nextPlayerButton = document.getElementById(gameID + "-" + checkerGameElements.nextPlayer.htmlId)
     let sourcePieceCords = getCordsFromId(sourcePiece.id)
     let targetPieceCords = getCordsFromId(targetPiece.id)
     let status = checkerGames[gameID].setTurn(sourcePieceCords + targetPieceCords)
@@ -176,11 +186,18 @@ function makeATurn(sourcePiece, targetPiece) {
       case Constants.nextPlayer:
         dataBox.textContent = `${playerText}'s turn`
         break;
+      case Constants.samePlayer:
+        nextPlayerButton.classList.remove('invisible')
+        break;
     }
+
     if (status === Constants.draw || status === Constants.win)
       setAllPiecesNonDraggable(gameID)
     else
       setPlayerPiecesToDraggable(gameID)
+
+    if (status === Constants.samePlayer)
+      nextPlayerButton.classList.remove('invisible')
   }
 }
 
