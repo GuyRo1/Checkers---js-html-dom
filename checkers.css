@@ -1,16 +1,17 @@
-*{
+* {
   font-family: 'Roboto', sans-serif;
-  background-color:black;
+  background-color: black;
 }
+
 .header {
-  display:flex;
+  display: flex;
   height: 5rem;
   background-color: #772ce8;
 }
 
-.checker-containers{
-  display:flex;
-  flex-direction:column;
+.checker-containers {
+  display: flex;
+  flex-direction: column;
 }
 
 .checker-containers__container {
@@ -35,16 +36,14 @@
   grid-area: b;
 }
 
-.ui__data-box{
-
+.ui__data-box {
   margin-bottom: 1rem;
   width: 20rem;
   height: 20rem;
   background-color: #772ce8;
-  color : white;
+  color: white;
   font-size: 3rem;
 }
-
 
 .checkers-board__tile {
   display: flex;
@@ -58,8 +57,16 @@
   border-radius: 50%;
 }
 
-.queen {
-  border: 0.5rem solid red
+.black.queen {
+  background-position: center;
+  background-image: url(./assets/black_king.jpg);
+  background-size: 100%;
+}
+
+.white.queen {
+  background-position: center;
+  background-image: url(./assets/white_king.jpg);
+  background-size: 100%;
 }
 
 .white {
@@ -82,11 +89,11 @@
   border: 3px dotted #772ce8;
 }
 
-.invisible{
-  visibility:hidden;
+.invisible {
+  visibility: hidden;
 }
 
-button  {
+button {
   margin-right: 1rem;
   background-color: #772ce8;
   display: inline-block;
@@ -102,7 +109,7 @@ button  {
   transition: all 0.2s;
 }
 
-button div.header{
+button div.header {
   height: 100%;
 }
 
@@ -111,12 +118,12 @@ button:hover {
   background-color: black;
 }
 
-button:disabled{
+button:disabled {
   visibility: hidden;
 }
 
-.moved{
-  cursor:grabbing;
+.moved {
+  cursor: grabbing;
 }
 
 [draggable=true] {
@@ -124,7 +131,6 @@ button:disabled{
   cursor: grab;
 }
 
-[draggable=false]{
+[draggable=false] {
   cursor: none;
 }
-
