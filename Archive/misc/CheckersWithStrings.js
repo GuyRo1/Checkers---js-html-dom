@@ -289,7 +289,7 @@ function makeAturn() {
 
 }
 ///////////////Render Engine///////////
-function drow() {
+function draw() {
 
     let tiles = document.getElementsByClassName('tile')
     let tilesLength = tiles.length
@@ -342,7 +342,7 @@ start.addEventListener('click', () => {
         let highlightedLength = highlighted.length
         for (let i = 0; i < highlightedLength; i++)
             highlighted[i].classList.remove('highlight')
-        drow()
+        draw()
         player = false
         pieceWasntChosen = true
         gameEnded = false
@@ -389,7 +389,7 @@ start.addEventListener('click', () => {
                             if (moveStatus > 0) {
                                 let sourceTile = document.getElementById(move.substr(0, 2))
                                 sourceTile.classList.remove('highlight')
-                                drow()
+                                draw()
                                 pieceWasntChosen = true
                                 if(moveStatus===2)
                                     nextPlayer = false
@@ -425,7 +425,7 @@ start.addEventListener('click', () => {
         checkersContainer.appendChild(chessBoard)
         createGameBoard()
         initializeBoard()
-        drow()
+        draw()
         start.textContent = "Start new game"
     }
 })
